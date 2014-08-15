@@ -456,7 +456,7 @@ Sub videoPlayerOnUrlEvent(msg, requestContext)
                 else if xml.TranscodeSession@throttled = "1" then
                     curState = " (> 1x)"
                 else
-                    curState = " (" + tostr(xml.TranscodeSession@speed) + "x)"
+                    curState = " (" + left(tostr(xml.TranscodeSession@speed),3) + "x)"
                 end if
 
                 if xml.TranscodeSession@videoDecision = "transcode" then
