@@ -296,6 +296,9 @@ Sub initTheme()
     subtitleColor = RegRead("subtitle_color", "preferences", "")
     if subtitleColor <> "" then theme.SubtitleColor = subtitleColor
 
+    ' Allow 6 buttons on the springboard screens
+    theme.SpringboardAllow6Buttons = "true"
+
     app.SetTheme(theme)
 
     ' clear any focus border theme attribute. These seemt to be left over if
