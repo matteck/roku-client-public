@@ -43,6 +43,18 @@ Function newVideoMetadata(container, item, detailed=false) As Object
         video.ShortDescriptionLine2 = item@summary
     endif
 
+    ' set the poster and springboard metadata
+    if item@extraType <> invalid then
+        extraTypes = {}
+        extraTypes["1"] = "Trailer"
+        extraTypes["2"] = "Deleted Scene"
+        extraTypes["3"] = "Interview"
+        extraTypes["5"] = "Behind the Scenes"
+        extraTypes["6"] = "Scene"
+        video.ShortDescriptionLine2 = firstOf(extraTypes[item@extraType],"")
+        video.Description = video.ShortDescriptionLine2
+    end if
+
     ' TODO(schuyler): Is there a less hacky way to decide this?
     if video.mediaContainerIdentifier = "com.plexapp.plugins.myplex" AND video.id <> invalid then
         video.DetailUrl = "/pms/playlists/items/" + video.id
