@@ -177,6 +177,7 @@ Function videoParseDetails()
             else
                 detailKey = m.Key + "?checkFiles=1"
             end if
+            detailKey = detailKey + "&includeExtras=1&includeRelated=0&includeRelatedCount=0"
         else
             detailKey = m.Key
         end if
@@ -201,6 +202,11 @@ Sub setVideoDetails(video, container, videoItemXml, hasDetails=true)
 
     ' Everything else requires a Video item, which we might not have for clips.
     if videoItemXml = invalid then return
+
+    ' video item has valid extras
+    if videoItemXml.extras <> invalid and val(firstOf(videoItemXml.extras@size, "0")) > 0 then
+        video.hasExtras = true
+    end if
 
     video.Actors = CreateObject("roArray", 15, true)
     for each Actor in videoItemXml.Role

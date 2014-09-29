@@ -73,6 +73,9 @@ Sub videoSetupButtons()
             m.AddRatingButton(m.metadata.UserRating, m.metadata.StarRating, "rateVideo")
         end if
     end if
+
+    ' show an extras button if any exist
+    if m.item.hasExtras = true then m.AddButton("Extras", "show_extras")
 End Sub
 
 Sub videoGetMediaDetails(content)
@@ -109,6 +112,12 @@ Function videoHandleMessage(msg) As Boolean
                     ' Refresh play data after playing.
                     m.refreshOnActivate = true
                 end if
+            else if buttonCommand = "show_extras" then
+                dummyItem = CreateObject("roAssociativeArray")
+                dummyItem.ContentType = "Extras"
+                dummyItem.key = m.item.key + "/extras"
+                dummyItem.server = m.item.server
+                m.ViewController.CreateScreenForItem(dummyItem, invalid, ["Extras"])
             else if buttonCommand = "scrobble" then
                 m.Item.server.Scrobble(m.metadata.ratingKey, m.metadata.mediaContainerIdentifier)
                 ' Refresh play data after scrobbling
@@ -131,6 +140,9 @@ Function videoHandleMessage(msg) As Boolean
                 dialog.Text = ""
                 dialog.Item = m.metadata
                 dialog.SetButton("rate", "_rate_")
+
+                ' show an extras button if any exist
+                if m.item.hasExtras = true then dialog.SetButton("show_extras", "Extras")
 
                 ' display View All Seasons if we have grandparentKey -- entered from a episode
                 if m.metadata.grandparentKey <> invalid then
@@ -193,6 +205,13 @@ Function videoDialogHandleButton(command, data) As Boolean
         if obj.metadata.ratingKey <> invalid then
             obj.Item.server.Rate(obj.metadata.ratingKey, obj.metadata.mediaContainerIdentifier, rateValue%.ToStr())
         end if
+    else if command = "show_extras" then
+        dummyItem = CreateObject("roAssociativeArray")
+        dummyItem.ContentType = "Extras"
+        dummyItem.key = obj.item.key + "/extras"
+        dummyItem.server = obj.item.server
+        obj.ViewController.CreateScreenForItem(dummyItem, invalid, ["Extras"])
+        closeDialog = true
     else if command = "close" then
         closeDialog = true
     end if
