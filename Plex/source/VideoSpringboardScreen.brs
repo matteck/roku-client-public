@@ -37,6 +37,11 @@ Sub videoSetupButtons()
     m.AddButton(m.PlayButtonStates[m.PlayButtonState].label, "play")
     Debug("Can direct play = " + tostr(videoCanDirectPlay(m.media, m.Item.server)))
 
+    ' include the extra button if the Roku supports 6 buttons
+    if m.item.hasExtras = true and CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [5, 1]) then
+        m.AddButton("Extras", "show_extras")
+    end if
+
     supportedIdentifier = (m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.library" OR m.metadata.mediaContainerIdentifier = "com.plexapp.plugins.myplex") and m.metadata.media <> invalid
     if supportedIdentifier then
         if m.metadata.viewCount <> invalid AND val(m.metadata.viewCount) > 0 then
@@ -67,15 +72,13 @@ Sub videoSetupButtons()
         ' and rate in a separate dialog.
         ' RR - when grandparentKey is present - we don't have enough room
         ' either. We present 'Show All Seasons' and 'Show Season #'
-        if m.metadata.server.AllowsMediaDeletion OR m.metadata.grandparentKey <> invalid then
+        if m.item.hasExtras = true OR m.metadata.server.AllowsMediaDeletion OR m.metadata.grandparentKey <> invalid then
             m.AddButton("More...", "more")
         else
             m.AddRatingButton(m.metadata.UserRating, m.metadata.StarRating, "rateVideo")
         end if
     end if
 
-    ' show an extras button if any exist
-    if m.item.hasExtras = true then m.AddButton("Extras", "show_extras")
 End Sub
 
 Sub videoGetMediaDetails(content)
