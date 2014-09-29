@@ -296,8 +296,8 @@ Function pmsConstructVideoItem(item, seekValue, allowDirectPlay, forceDirectPlay
         part = invalid
     end if
 
-    ' add Video Relase date to support releaseDate option in Roku HUD - RR
-    video.ReleaseDate = tostr(item.ReleaseDate)
+    ' add Video Release date to support releaseDate option in Roku HUD - RR
+    video.ReleaseDate = tostr(firstOf(item.ReleaseDate,""))
 
     ' set title to title + episode if episode - RR
     if item.EpisodeStr <> invalid then
