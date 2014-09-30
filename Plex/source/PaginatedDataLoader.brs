@@ -177,7 +177,12 @@ Sub loaderRefreshData()
     for row = 0 to m.contentArray.Count() - 1
         status = m.contentArray[row]
         if status.key <> invalid AND status.loadStatus <> 0 then
-            m.StartRequest(row, 0, m.pageSize)
+            if m.listener.selectedrow = row or m.listener.selectedrow+1 = row then
+                m.StartRequest(row, 0, m.pageSize)
+            else
+                status.loadStatus = 0
+                status.countLoaded = 0
+            end if
         end if
     next
 End Sub
