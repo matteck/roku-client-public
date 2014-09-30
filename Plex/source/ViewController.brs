@@ -428,7 +428,11 @@ Sub vcShowReleaseNotes()
     header = GetGlobal("appName") + " has been updated to " + GetGlobal("appVersionStr")
     paragraphs = []
     paragraphs.Push("Changes in this version include:")
-    paragraphs.Push(" - Fix a possible crash due to an existing sort")
+
+    paragraphs.Push(" - View movie trailers and extras from movie preplay")
+    paragraphs.Push(" - Improve performance on grid screens")
+    paragraphs.Push(" - Improve channel loading time when offline")
+    paragraphs.Push(" - Fix possible crash due to an existing sort")
 
     screen = createParagraphScreen(header, paragraphs, m)
     screen.ScreenName = "Release Notes"
