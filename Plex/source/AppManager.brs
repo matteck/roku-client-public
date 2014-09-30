@@ -41,6 +41,8 @@ Function AppManager()
         obj.FetchProducts = managerFetchProducts
         obj.HandleChannelStoreEvent = managerHandleChannelStoreEvent
         obj.StartPurchase = managerStartPurchase
+        obj.CheckStoreTimeout = managerCheckStoreTimeout
+        obj.StoreTimeout = 10
 
         ' Singleton
         m.AppManager = obj
@@ -63,7 +65,9 @@ End Sub
 
 Function managerIsInitialized() As Boolean
     m.Initializers.Reset()
-    return m.Initializers.IsEmpty()
+    status = m.Initializers.IsEmpty()
+    m.CheckStoreTimeout()
+    return status
 End Function
 
 Function managerIsPlaybackAllowed() As Boolean
@@ -93,6 +97,15 @@ Sub managerResetState()
     Debug("App state is now: " + m.State)
 End Sub
 
+Sub managerCheckStoreTimeout()
+    if m.StoreTimer <> invalid and m.StoreTimer.GetElapsedSeconds() > m.StoreTimeout then
+        Debug("Channel Store timed out: " + tostr(m.StoreTimer.GetElapsedSeconds()))
+        m.StoreTimer = invalid
+        m.ResetState()
+        m.ClearInitializer("channelstore")
+   end if
+end Sub
+
 Sub managerFetchProducts()
     ' On the older firmware, the roChannelStore exists, it just doesn't seem to
     ' work. So don't even bother, just say that the item isn't available for
@@ -111,6 +124,7 @@ Sub managerFetchProducts()
         store.GetPurchases()
         m.PendingStore = store
         m.PendingRequestPurchased = true
+        m.StoreTimer = createTimer()
     else
         ' Rather than force these users to have a Plex Pass, we'll exempt them.
         ' Among other things, this allows old users to continue to work, since
@@ -122,6 +136,7 @@ Sub managerFetchProducts()
 End Sub
 
 Sub managerHandleChannelStoreEvent(msg)
+    m.StoreTimer = invalid
     m.PendingStore = invalid
     atLeastOneProduct = false
 
