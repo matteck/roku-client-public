@@ -144,6 +144,11 @@ Function sbRefresh(force=false)
         m.thumbnailsToReset.Push(m.metadata)
     end if
 
+    ' content-type affects the poster dimensions, so treat clips as episodes.
+    if m.metadata.ContentType = "clip" then
+        m.metadata.ContentType = "episode"
+    end if
+
     m.Screen.setContent(m.metadata)
     m.Screen.AllowUpdates(false)
     m.SetupButtons()
