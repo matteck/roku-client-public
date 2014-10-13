@@ -80,16 +80,17 @@ Sub mpRefreshAccountInfo()
 End Sub
 
 Function mpValidateToken(token, async) As Boolean
-    req = m.CreateRequest("", "/users/sign_in.xml", false)
+    req = m.CreateRequest("", "/users/account", false)
+    req.AddHeader("X-Plex-Token", token)
 
     if async then
         context = CreateObject("roAssociativeArray")
         context.requestType = "account"
-        GetViewController().StartRequest(req, m, context, "auth_token=" + token)
+        GetViewController().StartRequest(req, m, context)
     else
         port = CreateObject("roMessagePort")
         req.SetPort(port)
-        req.AsyncPostFromString("auth_token=" + token)
+        req.AsyncGetFromString()
 
         event = wait(10000, port)
         m.ProcessAccountResponse(event)
@@ -106,7 +107,7 @@ Sub mpOnUrlEvent(msg, requestContext)
 End Sub
 
 Sub mpProcessAccountResponse(event)
-    if type(event) = "roUrlEvent" AND event.GetInt() = 1 AND event.GetResponseCode() = 201 then
+    if type(event) = "roUrlEvent" AND event.GetInt() = 1 AND event.GetResponseCode() = 200 then
         xml = CreateObject("roXMLElement")
         xml.Parse(event.GetString())
         m.Username = xml@username
@@ -115,6 +116,25 @@ Sub mpProcessAccountResponse(event)
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
 
+        if xml.entitlements <> invalid then
+            if tostr(xml.entitlements@all) = "1" then
+                m.IsEntitled = true
+            else
+                for each entitlement in xml.entitlements.GetChildElements()
+                    if ucase(tostr(entitlement@id)) = "ROKU" then
+                        m.IsEntitled = true
+                        exit for
+                    end if
+                end for
+            end if
+        end if
+
+        if m.IsEntitled = true then
+            RegWrite("IsEntitled", "1", "misc")
+        else
+            RegWrite("IsEntitled", "0", "misc")
+        end if
+
         if m.IsPlexPass then
             RegWrite("IsPlexPass", "1", "misc")
         else
@@ -122,6 +142,7 @@ Sub mpProcessAccountResponse(event)
         end if
         Debug("Validated myPlex token, corresponds to " + tostr(m.Username))
         Debug("PlexPass: " + tostr(m.IsPlexPass))
+        Debug("Entitlement: " + tostr(m.IsEntitled))
 
         mgr = AppManager()
         mgr.IsPlexPass = m.IsPlexPass

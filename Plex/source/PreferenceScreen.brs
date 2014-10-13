@@ -356,6 +356,8 @@ Function prefsMainHandleMessage(msg) As Boolean
                 manager = AppManager()
                 if manager.State = "Plex Pass" then
                     dialog.Text = "Plex is fully unlocked since you're a Plex Pass member."
+                else if manager.State = "Entitlement" then
+                    dialog.Text = "Plex is fully unlocked."
                 else if manager.State = "Exempt" then
                     dialog.Text = "Plex is fully unlocked."
                 else if manager.State = "Purchased" then

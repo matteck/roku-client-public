@@ -7,6 +7,7 @@ Function AppManager()
 
         ' The unlocked state of the app, one of: Plex Pass, Exempt, Purchased, Trial, or Limited
         obj.IsPlexPass = (RegRead("IsPlexPass", "misc", "0") = "1")
+        obj.IsEntitled = (RegRead("IsEntitled", "misc", "0") = "1")
         obj.IsPurchased = (RegRead("purchased", "misc", "0") = "1")
         obj.IsAvailableForPurchase = false
         obj.IsExempt = false
@@ -84,6 +85,8 @@ End Function
 Sub managerResetState()
     if m.IsPlexPass then
         m.State = "Plex Pass"
+    else if m.IsEntitled then
+        m.State = "Entitlement"
     else if m.IsExempt then
         m.State = "Exempt"
     else if m.IsPurchased then
