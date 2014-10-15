@@ -16,10 +16,16 @@ function createHomeUsersScreen(viewController as object) as object
 end function
 
 sub homeusersShow()
+    focusedIndex = 0
     for each user in MyPlexManager().homeUsers
         m.AddItem(user, "user")
+        if user.id = MyPlexManager().id then
+            focusedIndex = m.contentArray.Count()
+        end if
     end for
     m.AddItem({title: "Close"}, "close")
+
+    m.screen.SetFocusedListItem(focusedIndex)
 
     m.screen.Show()
 end sub
