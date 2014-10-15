@@ -17,6 +17,7 @@ Function createHomeScreen(viewController) As Object
     obj.OnTimerExpired = homeScreenOnTimerExpired
     obj.SuperActivate = obj.Activate
     obj.Activate = homeScreenActivate
+    obj.SetBreadCrumbs = homeScreenSetBreadcrumbs
 
     obj.clockTimer = createTimer()
     obj.clockTimer.Name = "clock"
@@ -61,7 +62,7 @@ End Sub
 
 Sub homeScreenOnTimerExpired(timer)
     if timer.Name = "clock" AND m.ViewController.IsActiveScreen(m) then
-        m.Screen.SetBreadcrumbText("", CurrentTimeAsString())
+        m.SetBreadcrumbs()
     else if timer.Name = "gridRowVisibilityChange" then
         gridCloseRowVisibilityFacade(timer)
     end if
@@ -69,6 +70,16 @@ End Sub
 
 Sub homeScreenActivate(priorScreen)
     m.clockTimer.Active = (RegRead("home_clock_display", "preferences", "12h") <> "off")
-    m.Screen.SetBreadcrumbText("", CurrentTimeAsString())
+    m.SetBreadcrumbs()
     m.SuperActivate(priorScreen)
+End Sub
+
+Sub homeScreenSetBreadcrumbs()
+    if MyPlexManager().homeUsers.count() > 0 then
+        userInfo = firstOf(MyPlexManager().Username, "")
+    else
+        userInfo = ""
+    end if
+    m.Screen.SetBreadcrumbEnabled(true)
+    m.Screen.SetBreadcrumbText(userInfo, CurrentTimeAsString())
 End Sub

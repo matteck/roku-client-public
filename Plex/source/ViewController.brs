@@ -106,13 +106,36 @@ Function GetViewController()
     return m.ViewController
 End Function
 
-Function vcCreateHomeScreen()
-    screen = createHomeScreen(m)
-    screen.ScreenName = "Home"
-    m.InitializeOtherScreen(screen, invalid)
-    screen.Screen.SetBreadcrumbEnabled(true)
-    screen.Screen.SetBreadcrumbText("", CurrentTimeAsString())
-    screen.Show()
+Function vcCreateHomeScreen() as dynamic
+    ' Verify the Users PIN if protected
+    if MyPlexManager().IsSignedIn and MyPlexManager().protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
+        ' we need to have at least one screen pushed to the stack, otherwise when
+        ' the pin screen closes, it will call this routine causing a loop. It works
+        ' well enough though because we'd need to show the user list anyways if the
+        ' user fails or wants to change the user.
+        userScreen = createHomeUsersScreen(m)
+        m.InitializeOtherScreen(userScreen, invalid)
+
+        ' show the Pin Entry screen for the user
+        screen = createHomeUserPinScreen(m, MyPlexManager().Username, MyPlexManager().id)
+        screen.show()
+
+        if screen.authorized then
+            homeScreen = m.CreateHomeScreen()
+            userScreen.screen.close()
+            return homeScreen
+        else
+            userScreen.Show()
+        end if
+
+        return invalid
+    else
+        screen = createHomeScreen(m)
+        screen.ScreenName = "Home"
+        m.InitializeOtherScreen(screen, invalid)
+        screen.SetBreadcrumbs()
+        screen.Show()
+    end if
 
     return screen
 End Function
@@ -213,6 +236,9 @@ Function vcCreateScreenForItem(context, contextIndex, breadcrumbs, show=true) As
     else if item.key = "globalprefs" then
         screen = createPreferencesScreen(m)
         screenName = "Preferences Main"
+    else if item.key = "homeusers" then
+        screen = createHomeUsersScreen(m)
+        screenName = "Home Users"
     else if item.key = "_filters_" then
         screen = createFiltersScreen(item, m)
         screenName = "Filters"

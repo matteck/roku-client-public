@@ -6,7 +6,7 @@ Function MyPlexManager() As Object
     if m.MyPlexManager = invalid then
         ' Start by creating a PlexMediaServer since we can't otherwise inherit
         ' anything. Then tweak as appropriate.
-        obj = newPlexMediaServer("https://plex.tv", "myPlex", "myplex")
+        obj = newPlexMediaServer("https://staging.plex.tv", "myPlex", "myplex")
 
         AppManager().AddInitializer("myplex")
 
@@ -51,6 +51,11 @@ Function MyPlexManager() As Object
         ' For using the view controller for HTTP requests
         obj.ScreenID = -5
         obj.OnUrlEvent = mpOnUrlEvent
+
+        ' Home Users
+        obj.homeUsers = createObject("roList")
+        obj.UpdateHomeUsers = mpUpdateHomeUsers
+        obj.SwitchHomeUser = mpSwitchHomeUser
 
         ' Singleton
         m.MyPlexManager = obj
@@ -110,8 +115,13 @@ Sub mpProcessAccountResponse(event)
     if type(event) = "roUrlEvent" AND event.GetInt() = 1 AND event.GetResponseCode() = 200 then
         xml = CreateObject("roXMLElement")
         xml.Parse(event.GetString())
+        m.id = xml@id
         m.Username = xml@username
         m.EmailAddress = xml@email
+        ' TODO(rob): will this cause any issues elsewhere? "X-Plex-Username"?
+        ' we can probably just convert our code to use m.title for display
+        if m.UserName = "" then m.UserName = xml@title
+        if m.EmailAddress = "" then m.EmailAddress = xml@title
         m.IsSignedIn = true
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
@@ -151,6 +161,20 @@ Sub mpProcessAccountResponse(event)
         mgr.ResetState()
 
         m.Publish()
+
+        ' update the list of users in the home
+        m.UpdateHomeUsers()
+        ' Will the /users/account include the "protected" key? If so we can remove this extra
+        ' step. The only need for this right now is to know if we need to show a pin entry
+        ' screen before displaying the home screen
+        if m.homeUsers.count() > 0 then
+            for each user in m.homeUsers
+                if m.id = user.id then
+                    m.protected = (tostr(user.protected) = "1")
+                    exit for
+                end if
+            end for
+        end if
     else
         Debug("Failed to validate myPlex token")
         m.IsSignedIn = false
@@ -313,3 +337,54 @@ End Function
 Sub mpLog(msg="", level=3, timeout=0)
     ' Noop, only defined to implement PlexMediaServer "interface"
 End Sub
+
+function mpUpdateHomeUsers() as boolean
+    req = m.CreateRequest("", "/api/home/users")
+
+    port = CreateObject("roMessagePort")
+    req.SetPort(port)
+    req.AsyncGetToString()
+
+    event = wait(10000, port)
+    if type(event) = "roUrlEvent" and event.GetInt() = 1 and event.GetResponseCode() = 200 then
+        xml = CreateObject("roXMLElement")
+        xml.Parse(event.GetString())
+        m.homeUsers.clear()
+        if firstOf(xml@size, "0").toInt() and xml.user <> invalid then
+            for each user in xml.user
+                m.homeUsers.push(user.GetAttributes())
+            end for
+        end if
+    end if
+
+    Debug("home users total: " + tostr(m.homeUsers.count()))
+end function
+
+function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
+    ' build path and post to myplex to swith the user
+    path = "/api/home/users/" + userid + "/switch"
+    req = m.CreateRequest("", path)
+    port = CreateObject("roMessagePort")
+    req.SetPort(port)
+    req.AsyncPostFromString("pin=" + pin)
+
+    event = wait(10000, port)
+    if type(event) = "roUrlEvent" and event.GetInt() = 1 and event.GetResponseCode() = 201 then
+        xml = CreateObject("roXMLElement")
+        xml.Parse(event.GetString())
+        if xml@authenticationToken <> invalid and m.ValidateToken(xml@authenticationToken, false) then
+            if pin <> "" then m.PinAuthenticated = true
+            RegWrite("AuthToken", xml@authenticationToken, "myplex")
+
+            ' refresh the home screen if it exists
+            home = GetViewController().home
+            if home <> invalid then
+                home.Refresh({ myplex: "connected", servers: true })
+            end if
+
+            return true
+        end if
+    end if
+
+    return false
+end function

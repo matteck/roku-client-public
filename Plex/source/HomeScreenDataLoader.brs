@@ -55,6 +55,18 @@ Function createHomeScreenDataLoader(listener)
     prefs.HDPosterURL = "file://pkg:/images/gear.png"
     loader.prefsItem = prefs
 
+    ' Create a static item for Home Users and put it in the Misc row.
+    homeUsers = CreateObject("roAssociativeArray")
+    homeUsers.sourceUrl = ""
+    homeUsers.ContentType = "HomeUsers"
+    homeUsers.Key = "homeusers"
+    homeUsers.Title = "Home Users"
+    homeUsers.ShortDescriptionLine1 = "Home Users"
+    ' TODO(rob) asset needed for home user switching
+    homeUsers.SDPosterURL = "file://pkg:/images/gear.png"
+    homeUsers.HDPosterURL = "file://pkg:/images/gear.png"
+    loader.homeUsersItem = homeUsers
+
     ' Create an item for Now Playing in the Misc row that will be shown while
     ' the audio player is active.
     nowPlaying = CreateObject("roAssociativeArray")
@@ -119,6 +131,9 @@ Sub homeSetupRows()
     next
 
     m.contentArray[m.RowIndexes["misc"]].content.Push(m.prefsItem)
+    if MyPlexManager().homeUsers.count() > 0 then
+        m.contentArray[m.RowIndexes["misc"]].content.Push(m.homeUsersItem)
+    end if
 
     ' Kick off myPlex requests if we're signed in.
     if MyPlexManager().IsSignedIn then
