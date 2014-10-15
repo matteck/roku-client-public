@@ -34,6 +34,7 @@ sub hupinRefresh()
     m.screen.addButton(2,"Reset")
     m.screen.addButton(0,"Cancel")
     m.screen.SetNumPinEntryFields(4)
+    m.screen.EnableBackButton(true)
 
     m.screen.show()
 end sub
