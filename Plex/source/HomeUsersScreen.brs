@@ -18,6 +18,14 @@ end function
 sub homeusersShow()
     focusedIndex = 0
     for each user in MyPlexManager().homeUsers
+        if tostr(user.protected) = "1" then
+            user.SDPosterUrl = "file://pkg:/images/lock_192x192.png"
+            user.HDPosterUrl = "file://pkg:/images/lock_192x192.png"
+        else
+            user.SDPosterUrl = "file://pkg:/images/unlock_192x192.png"
+            user.HDPosterUrl = "file://pkg:/images/unlock_192x192.png"
+        end if
+
         if tostr(user.admin) = "1" then
             user.ShortDescriptionLine1 = "Admin"
         else
