@@ -63,8 +63,8 @@ Function createHomeScreenDataLoader(listener)
     homeUsers.Title = "Home Users"
     homeUsers.ShortDescriptionLine1 = "Home Users"
     ' TODO(rob) asset needed for home user switching
-    homeUsers.SDPosterURL = "file://pkg:/images/gear.png"
-    homeUsers.HDPosterURL = "file://pkg:/images/gear.png"
+    homeUsers.SDPosterURL = "file://pkg:/images/homeusers.png"
+    homeUsers.HDPosterURL = "file://pkg:/images/homeusers.png"
     loader.homeUsersItem = homeUsers
 
     ' Create an item for Now Playing in the Misc row that will be shown while
