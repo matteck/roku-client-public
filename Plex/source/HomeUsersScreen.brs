@@ -4,7 +4,7 @@ function createHomeUsersScreen(viewController as object) as object
 
     screen = CreateObject("roListScreen")
     screen.SetMessagePort(obj.Port)
-    screen.SetHeader("Home Users")
+    screen.SetHeader("User Selection")
     obj.screen = screen
 
     obj.Show = homeusersShow
