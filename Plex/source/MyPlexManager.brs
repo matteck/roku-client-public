@@ -116,6 +116,7 @@ Sub mpProcessAccountResponse(event)
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
 
+        m.IsEntitled = false
         if xml.entitlements <> invalid then
             if tostr(xml.entitlements@all) = "1" then
                 m.IsEntitled = true
@@ -129,7 +130,7 @@ Sub mpProcessAccountResponse(event)
             end if
         end if
 
-        if m.IsEntitled = true then
+        if m.IsEntitled then
             RegWrite("IsEntitled", "1", "misc")
         else
             RegWrite("IsEntitled", "0", "misc")
@@ -146,6 +147,7 @@ Sub mpProcessAccountResponse(event)
 
         mgr = AppManager()
         mgr.IsPlexPass = m.IsPlexPass
+        mgr.IsEntitled = m.IsEntitled
         mgr.ResetState()
 
         m.Publish()
