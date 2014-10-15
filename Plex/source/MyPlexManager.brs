@@ -90,7 +90,7 @@ Function mpValidateToken(token, async) As Boolean
     else
         port = CreateObject("roMessagePort")
         req.SetPort(port)
-        req.AsyncGetFromString()
+        req.AsyncGetToString()
 
         event = wait(10000, port)
         m.ProcessAccountResponse(event)
