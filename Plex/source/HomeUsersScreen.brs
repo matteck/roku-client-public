@@ -18,6 +18,12 @@ end function
 sub homeusersShow()
     focusedIndex = 0
     for each user in MyPlexManager().homeUsers
+        if tostr(user.admin) = "1" then
+            user.ShortDescriptionLine1 = "Admin"
+        else
+            user.ShortDescriptionLine1 = ""
+        end if
+
         m.AddItem(user, "user")
         if user.id = MyPlexManager().id then
             focusedIndex = m.contentArray.Count()
