@@ -114,7 +114,7 @@ Function vcCreateHomeScreen() as dynamic
         ' well enough though because we'd need to show the user list anyways if the
         ' user fails or wants to change the user.
         userScreen = createHomeUsersScreen(m)
-        m.InitializeOtherScreen(userScreen, invalid)
+        m.InitializeOtherScreen(userScreen, ["Home Users"])
 
         ' show the Pin Entry screen for the user
         screen = createHomeUserPinScreen(m, MyPlexManager().Username, MyPlexManager().id)
