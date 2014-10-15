@@ -37,7 +37,7 @@ sub homeusersShow()
             focusedIndex = m.contentArray.Count()
         end if
     end for
-    m.AddItem({title: "Close"}, "close")
+    m.AddItem({title: "Close", SDPosterUrl: "", HDPosterUrl: ""}, "close")
 
     m.screen.SetFocusedListItem(focusedIndex)
 
