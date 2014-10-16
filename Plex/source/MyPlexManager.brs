@@ -225,6 +225,7 @@ Sub mpDisconnect()
     m.EmailAddress = invalid
     m.IsSignedIn = false
     m.AuthToken = invalid
+    m.homeUsers.clear()
     RegDelete("AuthToken", "myplex")
     ' remove all auth tokens for any server
     RegDeleteSection("server_tokens")
