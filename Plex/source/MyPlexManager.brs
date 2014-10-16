@@ -374,6 +374,9 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
         xml = CreateObject("roXMLElement")
         xml.Parse(event.GetString())
         if xml@authenticationToken <> invalid and m.ValidateToken(xml@authenticationToken, false) then
+            ' remove all auth tokens for any server
+            RegDeleteSection("server_tokens")
+
             if pin <> "" then m.PinAuthenticated = true
             RegWrite("AuthToken", xml@authenticationToken, "myplex")
 
