@@ -140,15 +140,17 @@ Sub homeSetupRows()
         m.CreateMyPlexRequests(false)
         m.UpdatePendingRequestsForConnectionTesting(true, true)
         m.UpdatePendingRequestsForConnectionTesting(false, true)
+        ' We will kick off requests for configured servers after we receive
+        ' a response my myPlex (and all server testing completes)
+    else
+        ' Kick off requests for servers we already know about.
+        configuredServers = PlexMediaServers()
+        Debug("Setting up home screen content, server count: " + tostr(configuredServers.Count()))
+        for each server in configuredServers
+            server.TestConnections(m)
+            m.UpdatePendingRequestsForConnectionTesting(server.owned, true)
+        next
     end if
-
-    ' Kick off requests for servers we already know about.
-    configuredServers = PlexMediaServers()
-    Debug("Setting up home screen content, server count: " + tostr(configuredServers.Count()))
-    for each server in configuredServers
-        server.TestConnections(m)
-        m.UpdatePendingRequestsForConnectionTesting(server.owned, true)
-    next
 End Sub
 
 Function homeCreateRow(name, style) As Integer
@@ -669,6 +671,13 @@ Sub homeOnUrlEvent(msg, requestContext)
                 Debug("Added myPlex server: " + tostr(newServer.name))
             end if
         next
+
+        ' create a timer to fire off the configured server requests
+        ' when all the pending servers tests have completed
+        timer = createTimer()
+        timer.name = "configuredServerRequests"
+        timer.SetDuration(50, true)
+        GetViewController().AddTimer(timer, m)
     end if
 End Sub
 
@@ -867,6 +876,26 @@ Sub homeOnTimerExpired(timer)
                 end if
             end if
         end for
+    else if timer.Name = "configuredServerRequests" then
+        pendingRequests = GetGlobal("serverPendingRequests")
+        if pendingRequests = 0 then
+            Debug("Start requests for configured servers (not already online)")
+            timer.Active = false
+            ' Kick off requests for servers we already know about, and only
+            ' if we do not already have a valid online connection
+            configuredServers = PlexMediaServers()
+            for each server in configuredServers
+                existing = GetPlexMediaServer(server.MachineID)
+                if existing = invalid or existing.online = false then
+                    server.TestConnections(m)
+                    m.UpdatePendingRequestsForConnectionTesting(server.owned, true)
+                else
+                    Debug("Ignore requests for " + tostr(server.name) + ", " + tostr(server.MachineID) + ": already configured and online")
+                end if
+            end for
+        else
+            Debug("Waiting for " + tostr(pendingRequests) + " pending requests to complete before starting requests for configured servers")
+        end if
     end if
 End Sub
 

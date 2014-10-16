@@ -995,6 +995,8 @@ Sub pmsOnUrlEvent(msg, requestContext)
     if requestContext.requestType = "connection" then
         isError = false
         m.pendingRequests = m.pendingRequests - 1
+        GetGlobalAA().AddReplace("serverPendingRequests", GetGlobal("serverPendingRequests") - 1)
+
         Debug("Connection test at " + requestContext.connectionUrl + " returned status " + tostr(msg.GetResponseCode()))
 
         ' If we already found a connection we're happy with, then move on.
@@ -1074,5 +1076,9 @@ Sub pmsTestConnections(listener)
         context.connectionListener = listener
         m.pendingRequests = m.pendingRequests + 1
         GetViewController().StartRequest(request, m, context)
+
+        ' increment the global pending request counter
+        pending = firstOf(GetGlobal("serverPendingRequests"), 0)
+        GetGlobalAA().AddReplace("serverPendingRequests", pending + 1)
     end for
 End Sub
