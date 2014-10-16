@@ -23,8 +23,11 @@ end function
 
 sub hupinRefresh()
     if m.screen <> invalid then
+        overlay = true
         Debug("Overlaying dialog")
         m.ScreensToClose.Unshift(m.Screen)
+    else
+        overlay = false
     end if
 
     m.screen = CreateObject("roPinEntryDialog")
@@ -35,6 +38,7 @@ sub hupinRefresh()
     m.screen.addButton(0,"Cancel")
     m.screen.SetNumPinEntryFields(4)
     m.screen.EnableBackButton(true)
+    m.Screen.EnableOverlay(overlay)
 
     m.screen.show()
 end sub
