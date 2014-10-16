@@ -83,12 +83,14 @@ function hupinHandleMessage(msg) as boolean
             m.ScreensToClose.Push(m.Screen)
             closeScreens = true
         end if
-    end if
 
-    for each screen in m.ScreensToClose
-        screen.Close()
-    next
-    m.ScreensToClose.Clear()
+        if closeScreens then
+            for each screen in m.ScreensToClose
+                screen.Close()
+            next
+            m.ScreensToClose.Clear()
+        end if
+    end if
 
     return handled
 end function
