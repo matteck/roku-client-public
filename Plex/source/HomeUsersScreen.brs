@@ -32,10 +32,10 @@ sub homeusersShow()
             user.ShortDescriptionLine1 = ""
         end if
 
-        m.AddItem(user, "user")
         if user.id = MyPlexManager().id then
             focusedIndex = m.contentArray.Count()
         end if
+        m.AddItem(user, "user")
     end for
     m.AddItem({title: "Close", SDPosterUrl: "", HDPosterUrl: ""}, "close")
 
