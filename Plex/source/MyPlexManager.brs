@@ -125,6 +125,8 @@ Sub mpProcessAccountResponse(event)
         m.IsSignedIn = true
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
+        m.Protected = false
+        m.Admin = false
 
         m.IsEntitled = false
         if xml.entitlements <> invalid then
@@ -164,13 +166,13 @@ Sub mpProcessAccountResponse(event)
 
         ' update the list of users in the home
         m.UpdateHomeUsers()
-        ' Will the /users/account include the "protected" key? If so we can remove this extra
-        ' step. The only need for this right now is to know if we need to show a pin entry
-        ' screen before displaying the home screen
+
+        ' set the users protected and admin keys
         if m.homeUsers.count() > 0 then
             for each user in m.homeUsers
                 if m.id = user.id then
-                    m.protected = (tostr(user.protected) = "1")
+                    m.Protected = (tostr(user.protected) = "1")
+                    m.Admin = (tostr(user.admin) = "1")
                     exit for
                 end if
             end for
