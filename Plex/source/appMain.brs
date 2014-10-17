@@ -193,6 +193,9 @@ Sub initGlobals()
 
     GetGlobalAA().AddReplace("legacy1080p", (device.HasFeature("1080p_hardware") AND major < 4))
     SupportsSurroundSound()
+
+    ' Set the current admin state. MyPlexManager will reset the state as needed.
+    GetGlobalAA().AddReplace("IsAdmin", true)
 End Sub
 
 Function GetGlobal(var, default=invalid)

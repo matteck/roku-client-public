@@ -13,7 +13,10 @@ Sub lsInitBaseListScreen(obj)
     obj.GetSelectedCommand = lsGetSelectedCommand
 End Sub
 
-Sub lsAddItem(item, command=invalid, value=invalid)
+Sub lsAddItem(item, command=invalid, value=invalid, adminOnly=false as boolean)
+    ' gate certain items from non admins
+    if adminOnly and NOT GetGlobalAA().Lookup("IsAdmin") then return
+
     if item.SDPosterURL = invalid then
         item.SDPosterURL = "file://pkg:/images/gear.png"
         item.HDPosterURL = "file://pkg:/images/gear.png"

@@ -174,6 +174,9 @@ Sub mpProcessAccountResponse(event)
                 end if
             end for
         end if
+
+        ' reset the current admin state
+        GetGlobalAA().AddReplace("IsAdmin", m.Admin)
     else
         Debug("Failed to validate myPlex token")
         m.IsSignedIn = false
@@ -228,6 +231,8 @@ Sub mpDisconnect()
     RegDelete("AuthToken", "myplex")
     ' remove all auth tokens for any server
     RegDeleteSection("server_tokens")
+    ' reset the current admin state
+    GetGlobalAA().AddReplace("IsAdmin", true)
 End Sub
 
 Function mpCheckTranscodeServer(showError=false As Boolean) As Boolean
