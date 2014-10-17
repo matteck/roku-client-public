@@ -177,6 +177,9 @@ Sub mpProcessAccountResponse(event)
 
         ' reset the current admin state
         GetGlobalAA().AddReplace("IsAdmin", m.Admin)
+
+        ' reset registry user
+        RegInitializeUser()
     else
         Debug("Failed to validate myPlex token")
         m.IsSignedIn = false
@@ -233,6 +236,9 @@ Sub mpDisconnect()
     ' reset the MyPlexManager singleton
     GetGlobalAA().Delete("MyPlexManager")
     MyPlexManager()
+
+    ' reset registry user
+    RegInitializeUser()
 End Sub
 
 Function mpCheckTranscodeServer(showError=false As Boolean) As Boolean

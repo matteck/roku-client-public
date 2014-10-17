@@ -93,6 +93,7 @@ Function createViewController() As Object
 
     ' Initialize things that run in the background
     AppManager().AddInitializer("viewcontroller")
+    RegInitializeUser()
     InitWebServer(controller)
     AudioPlayer()
     AnalyticsTracker()

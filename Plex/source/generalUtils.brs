@@ -5,64 +5,6 @@
 '**********************************************************
 
 '******************************************************
-'Registry Helper Functions
-'******************************************************
-Function RegRead(key, section=invalid, default=invalid)
-    ' Reading from the registry is somewhat expensive, especially for keys that
-    ' may be read repeatedly in a loop. We don't have that many keys anyway, keep
-    ' a cache of our keys in memory.
-
-    if section = invalid then section = "Default"
-    cacheKey = key + section
-    if m.RegistryCache.DoesExist(cacheKey) then return m.RegistryCache[cacheKey]
-
-    value = default
-    sec = CreateObject("roRegistrySection", section)
-    if sec.Exists(key) then value = sec.Read(key)
-
-    if value <> invalid then
-        m.RegistryCache[cacheKey] = value
-    end if
-
-    return value
-End Function
-
-Function RegWrite(key, val, section=invalid)
-    if val = invalid then
-        RegDelete(key, section)
-        return true
-    end if
-    if section = invalid then section = "Default"
-    sec = CreateObject("roRegistrySection", section)
-    sec.Write(key, val)
-    m.RegistryCache[key + section] = val
-    sec.Flush() 'commit it
-End Function
-
-Function RegDelete(key, section=invalid)
-    if section = invalid then section = "Default"
-    sec = CreateObject("roRegistrySection", section)
-    sec.Delete(key)
-    m.RegistryCache.Delete(key + section)
-    sec.Flush()
-End Function
-
-sub RegDeleteSection(section)
-    Debug("*********** Deleting any key associated with section: " + tostr(section))
-    flush = false
-    sec = CreateObject("roRegistrySection", section)
-    keyList = sec.GetKeyList()
-    for each key in keyList
-        flush = true
-        value = sec.Read(key)
-        Debug("Delete: " + tostr(key) + " : " + tostr(value))
-        sec.Delete(key)
-        m.RegistryCache.Delete(key + section)
-    end for
-    if flush = true then sec.Flush()
-end sub
-
-'******************************************************
 'Convert anything to a string
 '
 'Always returns a string
