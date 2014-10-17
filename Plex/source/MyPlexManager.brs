@@ -224,15 +224,15 @@ Function mpCreateRequest(sourceUrl As String, path As String, appendToken=true A
 End Function
 
 Sub mpDisconnect()
-    m.EmailAddress = invalid
-    m.IsSignedIn = false
-    m.AuthToken = invalid
-    m.homeUsers.clear()
     RegDelete("AuthToken", "myplex")
     ' remove all auth tokens for any server
     RegDeleteSection("server_tokens")
     ' reset the current admin state
     GetGlobalAA().AddReplace("IsAdmin", true)
+
+    ' reset the MyPlexManager singleton
+    GetGlobalAA().Delete("MyPlexManager")
+    MyPlexManager()
 End Sub
 
 Function mpCheckTranscodeServer(showError=false As Boolean) As Boolean
