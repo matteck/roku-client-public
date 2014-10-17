@@ -109,6 +109,10 @@ End Function
 Function vcCreateHomeScreen() as dynamic
     ' Verify the Users PIN if protected
     if MyPlexManager().IsSignedIn and MyPlexManager().protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
+        ' only show the user list and pin entry once.
+        if m.showUserList <> invalid then return invalid
+        m.showUserList = true
+
         ' we need to have at least one screen pushed to the stack, otherwise when
         ' the pin screen closes, it will call this routine causing a loop. It works
         ' well enough though because we'd need to show the user list anyways if the

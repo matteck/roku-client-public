@@ -37,7 +37,12 @@ sub homeusersShow()
         end if
         m.AddItem(user, "user")
     end for
-    m.AddItem({title: "Close", SDPosterUrl: "", HDPosterUrl: ""}, "close")
+
+    if GetViewController().screens.count() = 1 then
+        m.AddItem({title: "Exit", SDPosterUrl: "", HDPosterUrl: ""}, "close")
+    else
+        m.AddItem({title: "Close", SDPosterUrl: "", HDPosterUrl: ""}, "close")
+    end if
 
     m.screen.SetFocusedListItem(focusedIndex)
 
