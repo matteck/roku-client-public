@@ -76,7 +76,7 @@ End Sub
 
 Sub homeScreenSetBreadcrumbs()
     if MyPlexManager().homeUsers.count() > 0 then
-        userInfo = firstOf(MyPlexManager().Username, "")
+        userInfo = firstOf(MyPlexManager().Title, "")
     else
         userInfo = ""
     end if

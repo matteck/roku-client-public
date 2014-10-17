@@ -1659,9 +1659,8 @@ End Function
 '*** Helper functions ***
 
 Function getCurrentMyPlexLabel() As String
-    myplex = MyPlexManager()
-    if myplex.IsSignedIn then
-        return "Disconnect Plex account (" + myplex.EmailAddress + ")"
+    if MyPlexManager().IsSignedIn then
+        return "Disconnect Plex account (" + MyPlexManager().Title + ")"
     else
         return "Connect Plex account"
     end if

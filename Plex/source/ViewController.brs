@@ -108,7 +108,7 @@ End Function
 
 Function vcCreateHomeScreen() as dynamic
     ' Verify the Users PIN if protected
-    if MyPlexManager().IsSignedIn and MyPlexManager().protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
+    if MyPlexManager().IsSignedIn and MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
         ' only show the user list and pin entry once.
         if m.showUserList <> invalid then return invalid
         m.showUserList = true
@@ -122,7 +122,7 @@ Function vcCreateHomeScreen() as dynamic
         userScreen.Show()
 
         ' show the Pin Entry screen for the user
-        screen = createHomeUserPinScreen(m, MyPlexManager().Username, MyPlexManager().id)
+        screen = createHomeUserPinScreen(m, MyPlexManager().Title, MyPlexManager().Id)
         screen.show()
 
         if screen.authorized then

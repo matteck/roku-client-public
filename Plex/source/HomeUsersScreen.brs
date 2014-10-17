@@ -32,7 +32,7 @@ sub homeusersShow()
             user.ShortDescriptionLine1 = ""
         end if
 
-        if user.id = MyPlexManager().id then
+        if user.id = MyPlexManager().Id then
             focusedIndex = m.contentArray.Count()
         end if
         m.AddItem(user, "user")

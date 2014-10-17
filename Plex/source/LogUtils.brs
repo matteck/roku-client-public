@@ -150,7 +150,7 @@ End Function
 
 Sub loggerEnablePapertrail(minutes=20, pms=invalid)
     if MyPlexManager().IsSignedIn then
-        label = MyPlexManager().Username
+        label = MyPlexManager().Id + ":" + MyPlexManager().Title
     else
         label = GetGlobal("rokuUniqueID")
     end if
@@ -175,7 +175,7 @@ Sub loggerEnablePapertrail(minutes=20, pms=invalid)
     m.RemoteLoggingSeconds = minutes * 60
     m.RemoteLoggingTimer = CreateObject("roTimespan")
 
-    ' We always need to send a myPlex username, so cache the username now. If
+    ' We always need to send a myPlex id:title, so cache the id:title now. If
     ' the user happens to disconnect the myPlex account while remote logging is
     ' enabled, the logs will continue to be associated with the original
     ' account.

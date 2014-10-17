@@ -115,13 +115,10 @@ Sub mpProcessAccountResponse(event)
     if type(event) = "roUrlEvent" AND event.GetInt() = 1 AND event.GetResponseCode() = 200 then
         xml = CreateObject("roXMLElement")
         xml.Parse(event.GetString())
-        m.id = xml@id
+        m.Id = xml@id
         m.Username = xml@username
         m.EmailAddress = xml@email
-        ' TODO(rob): will this cause any issues elsewhere? "X-Plex-Username"?
-        ' we can probably just convert our code to use m.title for display
-        if m.UserName = "" then m.UserName = xml@title
-        if m.EmailAddress = "" then m.EmailAddress = xml@title
+        m.Title = xml@title
         m.IsSignedIn = true
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
@@ -153,7 +150,7 @@ Sub mpProcessAccountResponse(event)
         else
             RegWrite("IsPlexPass", "0", "misc")
         end if
-        Debug("Validated myPlex token, corresponds to " + tostr(m.Username))
+        Debug("Validated myPlex token, corresponds to " + tostr(m.Id) + ":" + tostr(m.Title))
         Debug("PlexPass: " + tostr(m.IsPlexPass))
         Debug("Entitlement: " + tostr(m.IsEntitled))
 
