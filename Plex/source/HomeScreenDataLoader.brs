@@ -131,7 +131,8 @@ Sub homeSetupRows()
     next
 
     m.contentArray[m.RowIndexes["misc"]].content.Push(m.prefsItem)
-    if MyPlexManager().homeUsers.count() > 0 then
+    if MyPlexManager().homeUsers.count() > 1 then
+        m.homeUsersItem.CurIndex = m.contentArray[m.RowIndexes["misc"]].content.count()
         m.contentArray[m.RowIndexes["misc"]].content.Push(m.homeUsersItem)
     end if
 
@@ -827,6 +828,16 @@ Sub homeRefreshData()
     else if m.nowPlayingItem.CurIndex <> invalid AND AudioPlayer().ContextScreenID = invalid then
         miscContent.Delete(m.nowPlayingItem.CurIndex)
         m.nowPlayingItem.CurIndex = invalid
+    end if
+
+    ' Add/Remove the Home Users item
+    MyPlexManager().UpdateHomeUsers()
+    if m.homeUsersItem.CurIndex = invalid and MyPlexManager().homeUsers.count() > 1 then
+        m.homeUsersItem.CurIndex = miscContent.Count()
+        miscContent.Push(m.homeUsersItem)
+    else if m.homeUsersItem.CurIndex <> invalid and MyPlexManager().homeUsers.count() <= 1 then
+        miscContent.Delete(m.homeUsersItem.CurIndex)
+        m.homeUsersItem.CurIndex = invalid
     end if
 
     ' Clear any screensaver images, use the default.
