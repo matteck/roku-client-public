@@ -349,9 +349,14 @@ Sub mpLog(msg="", level=3, timeout=0)
     ' Noop, only defined to implement PlexMediaServer "interface"
 End Sub
 
-function mpUpdateHomeUsers() as boolean
-    req = m.CreateRequest("", "/api/home/users")
+sub mpUpdateHomeUsers()
+    ' ignore request and clear any home users we are not signed in
+    if m.IsSignedIn = false then
+        m.homeUsers.clear()
+        return
+    end if
 
+    req = m.CreateRequest("", "/api/home/users")
     port = CreateObject("roMessagePort")
     req.SetPort(port)
     req.AsyncGetToString()
@@ -369,7 +374,7 @@ function mpUpdateHomeUsers() as boolean
     end if
 
     Debug("home users total: " + tostr(m.homeUsers.count()))
-end function
+end sub
 
 function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
     ' build path and post to myplex to swith the user
