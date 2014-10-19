@@ -17,6 +17,7 @@ end function
 
 sub homeusersShow()
     focusedIndex = 0
+    MyPlexManager().UpdateHomeUsers()
     for each user in MyPlexManager().homeUsers
         if tostr(user.protected) = "1" then
             user.SDPosterUrl = "file://pkg:/images/lock_192x192.png"
