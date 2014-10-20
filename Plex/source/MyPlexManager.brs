@@ -233,6 +233,13 @@ Sub mpDisconnect()
     ' reset the current admin state
     GetGlobalAA().AddReplace("IsAdmin", true)
 
+    Debug("Disconnect Plex Account - Reset Plex Pass and Entitlement status")
+    RegWrite("IsPlexPass", "0", "misc")
+    RegWrite("IsEntitled", "0", "misc")
+    AppManager().IsPlexPass = false
+    AppManager().IsEntitled = false
+    AppManager().ResetState()
+
     ' reset the MyPlexManager singleton
     GetGlobalAA().Delete("MyPlexManager")
     MyPlexManager()
