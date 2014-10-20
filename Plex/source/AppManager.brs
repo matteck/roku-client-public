@@ -97,7 +97,13 @@ Sub managerResetState()
         m.State = "Limited"
     end if
 
-    Debug("App state is now: " + m.State)
+    if m.State <> "Limited" and m.State <> "Trial" then
+        m.StateDisplay = "Unlocked"
+    else
+        m.StateDisplay = m.State
+    end if
+
+    Debug("App state is now: " + m.StateDisplay + " (" + m.State + ")")
 End Sub
 
 Sub managerCheckStoreTimeout()

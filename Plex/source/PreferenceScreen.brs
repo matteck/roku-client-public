@@ -269,7 +269,7 @@ Sub showPreferencesScreen()
     m.AddItem({title: "Screensaver"}, "screensaver", m.GetEnumValue("screensaver"))
     m.AddItem({title: "Logging"}, "debug")
     m.AddItem({title: "Advanced Preferences"}, "advanced")
-    m.AddItem({title: "Channel Status: " + AppManager().State}, "status")
+    m.AddItem({title: "Channel Status: " + AppManager().StateDisplay}, "status")
 
     m.AddItem({title: "Close Preferences"}, "close")
 
@@ -349,15 +349,7 @@ Function prefsMainHandleMessage(msg) As Boolean
                 dialog.Title = "Channel Status"
 
                 manager = AppManager()
-                if manager.State = "Plex Pass" then
-                    dialog.Text = "Plex is fully unlocked since you're a Plex Pass member."
-                else if manager.State = "Entitlement" then
-                    dialog.Text = "Plex is fully unlocked."
-                else if manager.State = "Exempt" then
-                    dialog.Text = "Plex is fully unlocked."
-                else if manager.State = "Purchased" then
-                    dialog.Text = "Plex has been purchased and is fully unlocked."
-                else if manager.State = "Trial" then
+                if manager.State = "Trial" then
                     if manager.IsAvailableForPurchase then
                         dialog.Text = "Plex is currently in a trial period. To fully unlock the channel, you can purchase it or connect a Plex Pass account."
                         dialog.SetButton("purchase", "Purchase the channel")
@@ -371,6 +363,8 @@ Function prefsMainHandleMessage(msg) As Boolean
                     else
                         dialog.Text = "Your Plex trial has expired and playback is currently disabled. To fully unlock the channel, you must connect a Plex Pass account."
                     end if
+                else
+                    dialog.Text = "Plex is fully unlocked."
                 end if
 
                 dialog.SetButton("close", "Close")
@@ -431,7 +425,7 @@ Sub prefsMainActivate(priorScreen)
         m.SetTitle(m.myPlexIndex, getCurrentMyPlexLabel())
     else if m.checkStatusOnActivate then
         m.checkStatusOnActivate = false
-        m.SetTitle(m.statusIndex, "Channel Status: " + AppManager().State)
+        m.SetTitle(m.statusIndex, "Channel Status: " + AppManager().StateDisplay)
     end if
 End Sub
 
