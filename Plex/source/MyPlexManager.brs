@@ -181,8 +181,18 @@ Sub mpProcessAccountResponse(event)
         ' reset registry user
         RegInitializeUser()
     else
-        Debug("Failed to validate myPlex token")
-        m.IsSignedIn = false
+        if type(event) = "roUrlEvent" AND event.GetInt() = 1 then
+            responseCode = tostr(event.GetResponseCode())
+        else
+            responseCode = "unknown"
+        end if
+
+        Debug("Failed to validate myPlex token: ResponseCode=" + responseCode)
+        if responseCode = "401" then
+            m.Disconnect()
+        else
+            m.IsSignedIn = false
+        end if
     end if
 End Sub
 
