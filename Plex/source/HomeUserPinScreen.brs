@@ -15,6 +15,7 @@ function createHomeUserPinScreen(viewController as object, user as string, id as
     obj.authorized = false
     obj.id = id
     obj.user = user
+    obj.pinError = false
 
     obj.ScreensToClose = []
 
@@ -32,7 +33,11 @@ sub hupinRefresh()
 
     m.screen = CreateObject("roPinEntryDialog")
     m.screen.SetMessagePort(m.Port)
-    m.screen.setTitle("Pin Entry - " + m.user)
+    if m.pinError then
+        m.screen.setTitle(m.user + " pin failure, try again.")
+    else
+        m.screen.setTitle(m.user + " pin entry")
+    end if
     m.screen.addButton(1,"Next")
     m.screen.addButton(2,"Reset")
     m.screen.addButton(0,"Cancel")
@@ -70,6 +75,7 @@ function hupinHandleMessage(msg) as boolean
             closeScreens = true
             m.ViewController.PopScreen(m)
         else if msg.getIndex() = 2 then
+            m.pinError = false
             m.refresh()
         else if msg.getIndex() = 1 then
             m.authorized = MyPlexManager().SwitchHomeUser(m.id, m.screen.pin())
@@ -77,6 +83,7 @@ function hupinHandleMessage(msg) as boolean
                 m.ScreensToClose.Push(m.Screen)
                 closeScreens = true
             else
+                m.pinError = true
                 m.refresh()
             end if
         else if msg.getIndex() = 0
