@@ -3,6 +3,12 @@
 
 Function ParseRegistryServerList() As Object
     list = []
+
+    if MyPlexManager().IsRestricted then
+        Debug("restricted user: ignore any servers save in the registry")
+        return list
+    end if
+
     servers = RegRead("serverList", "servers")
     Debug("Registry Server list string: " + tostr(servers))
 
