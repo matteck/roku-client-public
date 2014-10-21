@@ -1487,16 +1487,26 @@ Function createHomeScreenPrefsScreen(viewController) As Object
     }
 
     ' Home screen rows that can be reordered
-    values = [
-        { title: "Channels", key: "channels" },
-        { title: "Library Sections", key: "sections" },
-        { title: "On Deck", key: "on_deck" },
-        { title: "Recently Added", key: "recently_added" },
-        { title: "Queue", key: "queue" },
-        { title: "Recommendations", key: "recommendations" },
-        { title: "Shared Library Sections", key: "shared_sections" },
-        { title: "Miscellaneous", key: "misc" }
-    ]
+    if MyPlexManager().IsRestricted then
+        values = [
+            { title: "Library Sections", key: "sections" },
+            { title: "On Deck", key: "on_deck" },
+            { title: "Recently Added", key: "recently_added" },
+            { title: "Shared Library Sections", key: "shared_sections" },
+            { title: "Miscellaneous", key: "misc" }
+        ]
+    else
+        values = [
+            { title: "Channels", key: "channels" },
+            { title: "Library Sections", key: "sections" },
+            { title: "On Deck", key: "on_deck" },
+            { title: "Recently Added", key: "recently_added" },
+            { title: "Queue", key: "queue" },
+            { title: "Recommendations", key: "recommendations" },
+            { title: "Shared Library Sections", key: "shared_sections" },
+            { title: "Miscellaneous", key: "misc" }
+        ]
+    end if
     obj.Prefs["home_row_order"] = {
         values: values,
         default: ""
@@ -1515,11 +1525,11 @@ Function createHomeScreenPrefsScreen(viewController) As Object
 
     obj.Screen.SetHeader("Change the appearance of the home screen")
 
-    obj.AddItem({title: "Queue"}, "playlist_view_queue", obj.GetEnumValue("playlist_view_queue"))
-    obj.AddItem({title: "Recommendations"}, "playlist_view_recommendations", obj.GetEnumValue("playlist_view_recommendations"))
+    obj.AddItem({title: "Queue"}, "playlist_view_queue", obj.GetEnumValue("playlist_view_queue"), false, true)
+    obj.AddItem({title: "Recommendations"}, "playlist_view_recommendations", obj.GetEnumValue("playlist_view_recommendations"), false, true)
     obj.AddItem({title: "On Deck"}, "row_visibility_ondeck", obj.GetEnumValue("row_visibility_ondeck"))
     obj.AddItem({title: "Recently Added"}, "row_visibility_recentlyadded", obj.GetEnumValue("row_visibility_recentlyadded"))
-    obj.AddItem({title: "Channels"}, "row_visibility_channels", obj.GetEnumValue("row_visibility_channels"))
+    obj.AddItem({title: "Channels"}, "row_visibility_channels", obj.GetEnumValue("row_visibility_channels"), false, true)
     obj.AddItem({title: "Library Sections"}, "row_visibility_sections", obj.GetEnumValue("row_visibility_sections"))
     obj.AddItem({title: "Shared Library Sections"}, "row_visibility_shared_sections", obj.GetEnumValue("row_visibility_shared_sections"))
     obj.AddItem({title: "Reorder Rows"}, "home_row_order")

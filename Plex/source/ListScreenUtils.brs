@@ -13,9 +13,11 @@ Sub lsInitBaseListScreen(obj)
     obj.GetSelectedCommand = lsGetSelectedCommand
 End Sub
 
-Sub lsAddItem(item, command=invalid, value=invalid, adminOnly=false as boolean)
+Sub lsAddItem(item, command=invalid, value=invalid, adminOnly=false as boolean, restricted=false as boolean)
     ' gate certain items from non admins
     if adminOnly and NOT GetGlobalAA().Lookup("IsAdmin") then return
+    ' gate certain items from restricted users
+    if restricted and MyPlexManager().IsRestricted then return
 
     if item.SDPosterURL = invalid then
         item.SDPosterURL = "file://pkg:/images/gear.png"
