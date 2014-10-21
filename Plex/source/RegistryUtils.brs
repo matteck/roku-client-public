@@ -2,11 +2,11 @@
 ' Registry Helper Functions (original + user section helper)
 '***********************************************************
 
-Function RegRead(key, section=invalid, default=invalid)
+Function RegRead(key, section=invalid, default=invalid, useAdmin=false as boolean)
     ' Reading from the registry is somewhat expensive, especially for keys that
     ' may be read repeatedly in a loop. We don't have that many keys anyway, keep
     ' a cache of our keys in memory.
-    section = RegGetSectionName(section)
+    section = RegGetSectionName(section, useAdmin)
 
     cacheKey = key + section
     if m.RegistryCache.DoesExist(cacheKey) then return m.RegistryCache[cacheKey]
@@ -76,10 +76,9 @@ function RegGetUniqueSections()
 end function
 
 ' return the section name, converting the required ones to the right format
-Function RegGetSectionName(section=invalid as dynamic) as string
+Function RegGetSectionName(section=invalid as dynamic, useAdmin=false as boolean) as string
     if section = invalid then return "Default"
-
-    if m.userRegPrefs <> invalid and m.userRegPrefs[section] <> invalid then
+    if useAdmin = false and m.userRegPrefs <> invalid and m.userRegPrefs[section] <> invalid then
         return m.userRegPrefs[section]
     else
         return section
