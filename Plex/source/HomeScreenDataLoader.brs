@@ -246,7 +246,7 @@ Sub homeCreateMyPlexRequests(startRequests As Boolean)
 End Sub
 
 Sub homeCreateAllPlaylistRequests(startRequests As Boolean)
-    if NOT MyPlexManager().IsSignedIn then return
+    if NOT MyPlexManager().IsSignedIn or MyPlexManager().IsRestricted then return
 
     m.CreatePlaylistRequests("queue", "All Queued Items", "All queued items, including already watched items", m.RowIndexes["queue"], startRequests)
     m.CreatePlaylistRequests("recommendations", "All Recommended Items", "All recommended items, including already watched items", m.RowIndexes["recommendations"], startRequests)
