@@ -5,6 +5,10 @@
 '*** GDM Discovery ***
 
 Function createGDMDiscovery(port, listener=invalid)
+    if MyPlexManager().IsRestricted then
+        Debug("GDM disabled for restricted users")
+        return invalid
+    end if
     Debug("IN GDMFind")
 
     message = "M-SEARCH * HTTP/1.1"+chr(13)+chr(10)+chr(13)+chr(10)
