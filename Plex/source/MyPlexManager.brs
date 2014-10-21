@@ -418,7 +418,7 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
             ' refresh the home screen if it exists
             home = GetViewController().home
             if home <> invalid then
-                home.Refresh({ myplex: "connected", servers: true })
+                home.Refresh({ myplex: "connected", servers: true, switchUser: true })
             end if
 
             return true

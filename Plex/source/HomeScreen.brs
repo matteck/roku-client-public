@@ -36,6 +36,22 @@ Sub refreshHomeScreen(changes)
         m.Loader.OnMyPlexChange()
     end if
 
+    if changes.DoesExist("switchUser") and NOT MyPlexManager().IsRestricted then
+        ' Kick off an asynchronous GDM discover.
+        if RegRead("autodiscover", "preferences", "1") = "1" then
+            m.Loader.GDM = createGDMDiscovery(GetViewController().GlobalMessagePort, m.Loader)
+            if m.Loader.GDM = invalid then
+                Debug("Failed to create GDM discovery object")
+            else
+                m.Loader.UpdatePendingRequestsForConnectionTesting(true, true)
+                timer = createTimer()
+                timer.Name = "GDMRequests"
+                timer.SetDuration(5000)
+                GetViewController().AddTimer(timer, m.Loader)
+            end if
+        end if
+    end if
+
     ' If a server was added or removed, we need to update the sections,
     ' channels, and channel directories.
     if changes.DoesExist("servers") then
