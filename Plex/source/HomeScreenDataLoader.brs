@@ -110,23 +110,24 @@ Sub homeSetupRows()
         { title: "Library Sections", key: "sections", style: "square", visibility_key: "row_visibility_sections", account_required: false },
         { title: "On Deck", key: "on_deck", style: "portrait", visibility_key: "row_visibility_ondeck", account_required: false },
         { title: "Recently Added", key: "recently_added", style: "portrait", visibility_key: "row_visibility_recentlyadded", account_required: false },
-        { title: "Queue", key: "queue", style: "landscape", visibility_key: "playlist_view_queue", account_required: true, restricted: true },
-        { title: "Recommendations", key: "recommendations", style: "landscape", visibility_key: "playlist_view_recommendations", account_required: true, restricted: true },
+        { title: "Queue", key: "queue", style: "landscape", visibility_key: "playlist_view_queue", account_required: true, queue_required: true },
+        { title: "Recommendations", key: "recommendations", style: "landscape", visibility_key: "playlist_view_recommendations", account_required: true, queue_required: true },
         { title: "Shared Library Sections", key: "shared_sections", style: "square", visibility_key: "row_visibility_shared_sections", account_required: true },
         { title: "Miscellaneous", key: "misc", style: "square", account_required: false }
     ]
     ReorderItemsByKeyPriority(rows, RegRead("home_row_order", "preferences", ""))
 
     for each row in rows
-        visibility = ""
-        if row.visibility_key <> invalid then
-            visibility = RegRead(row.visibility_key, "preferences", "")
-        end if
-
-        if visibility <> "hidden" and NOT ( (row.account_required and NOT MyPlexManager().IsSignedIn) or (row.restricted = true and MyPlexManager().IsRestricted = true) ) then
-            m.RowIndexes[row.key] = m.CreateRow(row.title, row.style)
-        else
+        if row.visibility_key <> invalid and RegRead(row.visibility_key, "preferences", "") = "hidden" then
             m.RowIndexes[row.key] = -1
+        else if row.account_required and MyPlexManager().IsSignedIn = false then
+            m.RowIndexes[row.key] = -1
+        else if row.restricted = true and MyPlexManager().IsRestricted = true then
+            m.RowIndexes[row.key] = -1
+        else if row.queue_required = true and MyPlexManager().HasQueue = false then
+            m.RowIndexes[row.key] = -1
+        else
+            m.RowIndexes[row.key] = m.CreateRow(row.title, row.style)
         end if
     next
 
@@ -246,7 +247,7 @@ Sub homeCreateMyPlexRequests(startRequests As Boolean)
 End Sub
 
 Sub homeCreateAllPlaylistRequests(startRequests As Boolean)
-    if NOT MyPlexManager().IsSignedIn or MyPlexManager().IsRestricted then return
+    if NOT MyPlexManager().IsSignedIn or NOT MyPlexManager().HasQueue then return
 
     m.CreatePlaylistRequests("queue", "All Queued Items", "All queued items, including already watched items", m.RowIndexes["queue"], startRequests)
     m.CreatePlaylistRequests("recommendations", "All Recommended Items", "All recommended items, including already watched items", m.RowIndexes["recommendations"], startRequests)
