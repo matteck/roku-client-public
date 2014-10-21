@@ -110,8 +110,8 @@ Sub homeSetupRows()
         { title: "Library Sections", key: "sections", style: "square", visibility_key: "row_visibility_sections", account_required: false },
         { title: "On Deck", key: "on_deck", style: "portrait", visibility_key: "row_visibility_ondeck", account_required: false },
         { title: "Recently Added", key: "recently_added", style: "portrait", visibility_key: "row_visibility_recentlyadded", account_required: false },
-        { title: "Queue", key: "queue", style: "landscape", visibility_key: "playlist_view_queue", account_required: true },
-        { title: "Recommendations", key: "recommendations", style: "landscape", visibility_key: "playlist_view_recommendations", account_required: true },
+        { title: "Queue", key: "queue", style: "landscape", visibility_key: "playlist_view_queue", account_required: true, restricted: true },
+        { title: "Recommendations", key: "recommendations", style: "landscape", visibility_key: "playlist_view_recommendations", account_required: true, restricted: true },
         { title: "Shared Library Sections", key: "shared_sections", style: "square", visibility_key: "row_visibility_shared_sections", account_required: true },
         { title: "Miscellaneous", key: "misc", style: "square", account_required: false }
     ]
@@ -123,7 +123,7 @@ Sub homeSetupRows()
             visibility = RegRead(row.visibility_key, "preferences", "")
         end if
 
-        if visibility <> "hidden" AND NOT (row.account_required AND NOT MyPlexManager().IsSignedIn) then
+        if visibility <> "hidden" and NOT ( (row.account_required and NOT MyPlexManager().IsSignedIn) or (row.restricted = true and MyPlexManager().IsRestricted = true) ) then
             m.RowIndexes[row.key] = m.CreateRow(row.title, row.style)
         else
             m.RowIndexes[row.key] = -1
