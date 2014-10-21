@@ -178,7 +178,7 @@ Sub homeCreateServerRequests(server As Object, startRequests As Boolean)
     sections.server = server
     sections.key = "/library/sections"
 
-    if server.owned then
+    if server.owned or MyPlexManager().IsRestricted then
         m.AddOrStartRequest(sections, m.RowIndexes["sections"], startRequests)
     else
         m.AddOrStartRequest(sections, m.RowIndexes["shared_sections"], startRequests)
@@ -186,7 +186,7 @@ Sub homeCreateServerRequests(server As Object, startRequests As Boolean)
     end if
 
     ' Request recently used channels
-    if m.RowIndexes["channels"] >= 0 then
+    if NOT MyPlexManager().IsRestricted and m.RowIndexes["channels"] >= 0 then
         channels = CreateObject("roAssociativeArray")
         channels.server = server
         channels.key = "/channels/recentlyViewed"
@@ -975,8 +975,9 @@ Sub homeUpdatePendingRequestsForConnectionTesting(owned, increment)
         delta = -1
     end if
 
-    if owned then
-        row_keys = ["channels", "sections", "on_deck", "recently_added"]
+    if owned or MyPlexManager().IsRestricted then
+        row_keys = ["sections", "on_deck", "recently_added"]
+        if owned then row_keys.Unshift("channels")
     else
         row_keys = ["shared_sections"]
     end if
