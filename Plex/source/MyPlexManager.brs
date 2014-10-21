@@ -39,6 +39,7 @@ Function MyPlexManager() As Object
         obj.IsSignedIn = false
         obj.IsPlexPass = false
         obj.IsRestricted = false
+        obj.HasQueue = false
         obj.Username = invalid
         obj.EmailAddress = invalid
         obj.RefreshAccountInfo = mpRefreshAccountInfo
@@ -124,6 +125,7 @@ Sub mpProcessAccountResponse(event)
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
         m.IsRestricted = (xml@restricted = "1")
+        m.HasQueue = (xml@queueEmail <> invalid and xml@queueEmail <> "" and xml@queueEmail <> invalid and xml@queueEmail <> "")
         m.Protected = false
         m.Admin = false
 
