@@ -38,6 +38,7 @@ Function MyPlexManager() As Object
 
         obj.IsSignedIn = false
         obj.IsPlexPass = false
+        obj.IsRestricted = false
         obj.Username = invalid
         obj.EmailAddress = invalid
         obj.RefreshAccountInfo = mpRefreshAccountInfo
@@ -122,6 +123,7 @@ Sub mpProcessAccountResponse(event)
         m.IsSignedIn = true
         m.AuthToken = xml@authenticationToken
         m.IsPlexPass = (xml.subscription <> invalid AND xml.subscription@active = "1")
+        m.IsRestricted = (xml@restricted = "1")
         m.Protected = false
         m.Admin = false
 
@@ -153,6 +155,7 @@ Sub mpProcessAccountResponse(event)
         Debug("Validated myPlex token, corresponds to " + tostr(m.Id) + ":" + tostr(m.Title))
         Debug("PlexPass: " + tostr(m.IsPlexPass))
         Debug("Entitlement: " + tostr(m.IsEntitled))
+        Debug("Restricted: " + tostr(m.IsRestricted))
 
         mgr = AppManager()
         mgr.IsPlexPass = m.IsPlexPass
