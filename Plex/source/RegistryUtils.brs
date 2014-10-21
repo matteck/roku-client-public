@@ -91,7 +91,10 @@ end function
 ' call this when switching users and startup
 sub RegInitializeUser()
     ' users will use the defaults prefs if: Not signed in, invalid Id, or Admin
-    if NOT MyPlexManager().IsSignedIn or MyPlexManager().Admin = true or MyPlexManager().Id = invalid then return
+    if NOT MyPlexManager().IsSignedIn or MyPlexManager().Admin = true or MyPlexManager().Id = invalid then
+        m.userRegPrefs = invalid
+        return
+    end if
 
     Debug("Initializing user Id: " + MyPlexManager().Id)
     m.userRegPrefs = RegGetUniqueSections()

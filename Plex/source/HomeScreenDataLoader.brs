@@ -106,7 +106,7 @@ Sub homeSetupRows()
     m.RowIndexes = {}
 
     rows = [
-        { title: "Channels", key: "channels", style: "square", visibility_key: "row_visibility_channels", account_required: false },
+        { title: "Channels", key: "channels", style: "square", visibility_key: "row_visibility_channels", account_required: false, restricted: true },
         { title: "Library Sections", key: "sections", style: "square", visibility_key: "row_visibility_sections", account_required: false },
         { title: "On Deck", key: "on_deck", style: "portrait", visibility_key: "row_visibility_ondeck", account_required: false },
         { title: "Recently Added", key: "recently_added", style: "portrait", visibility_key: "row_visibility_recentlyadded", account_required: false },
