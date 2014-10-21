@@ -9,7 +9,7 @@ Function createGridScreen(viewController, gridStyle=invalid, nonMixGridStyle=inv
 
     ' We allow the user to change between a mixed-aspect-grid (left focus) and
     ' other styles in the Advanced settings
-    regGridStyle = RegRead("gridStyle", "preferences", "mixed-aspect-ratio")
+    regGridStyle = RegRead("gridStyle", "preferences", "mixed-aspect-ratio", true)
 
     ' ignore the style request if "mixed-aspect-ratio" (left focus) is prefered
     if regGridStyle = "mixed-aspect-ratio" then

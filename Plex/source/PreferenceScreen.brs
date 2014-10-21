@@ -667,7 +667,7 @@ Function createAdvancedPrefsScreen(viewController) As Object
 
     obj.Screen.SetHeader("Advanced preferences don't usually need to be changed")
 
-    obj.AddItem({title: "Grid Style"}, "gridStyle", obj.GetEnumValue("gridStyle"))
+    obj.AddItem({title: "Grid Style"}, "gridStyle", obj.GetEnumValue("gridStyle"), true)
     obj.AddItem({title: "Transcoder"}, "transcoder_version", obj.GetEnumValue("transcoder_version"))
     obj.AddItem({title: "Continuous Play"}, "continuous_play", obj.GetEnumValue("continuous_play"))
     obj.AddItem({title: "H.264"}, "level", obj.GetEnumValue("level"))
