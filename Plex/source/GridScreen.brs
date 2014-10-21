@@ -354,9 +354,11 @@ Sub gridOnDataLoaded(row As Integer, data As Object, startItem As Integer, count
                     dummy.Key = invalid
                     dummy.ThumbUrl = invalid
                     dummy.ThumbProcessed = ""
-                    dummy.paragraphs = []
-                    dummy.paragraphs.Push("If you'll never use this row '" + rowName + "', you can reorder it under Preferences -> Section Display")
-                    dummy.Title = rowName + " is Empty"
+                    if rowName <> invalid then
+                        dummy.paragraphs = []
+                        dummy.paragraphs.Push("If you'll never use this row '" + rowName + "', you can reorder it under Preferences -> Section Display")
+                    end if
+                    dummy.Title = firstOf(rowName, "Row") + " is Empty"
                     dummy.header = dummy.Title
                     placeholder = dummy
                 end if
