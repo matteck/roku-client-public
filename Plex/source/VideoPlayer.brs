@@ -239,7 +239,10 @@ End Sub
 Sub videoPlayerShowPlaybackError()
     dialog = createBaseDialog()
 
-    if m.curPart <> invalid AND NOT m.curPart.exists then
+    if m.Item.preferredMediaItem <> invalid and m.Item.preferredMediaItem.indirect = true then
+        dialog.Title = "Video Unavailable"
+        dialog.Text = "Sorry, but we can't play this video. The original video may no longer be available, or it may be in a format that isn't supported."
+    else if m.curPart <> invalid AND NOT m.curPart.exists then
         dialog.Title = "Video Unavailable"
         dialog.Text = "Please check that this file exists and the necessary drive is mounted."
     else if m.curPart <> invalid AND NOT m.curPart.accessible then
@@ -257,7 +260,7 @@ Sub videoPlayerShowPlaybackError()
         dialog.Text = "We're unable to play this video, make sure the server is running and has access to this video."
     end if
 
-    dialog.Show()
+    dialog.Show(true)
 End Sub
 
 Function videoPlayerHandleMessage(msg) As Boolean

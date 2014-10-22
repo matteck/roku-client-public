@@ -323,11 +323,6 @@ Function pmsConstructVideoItem(item, seekValue, allowDirectPlay, forceDirectPlay
         if mediaItem.indirect then
             mediaKeyXml = IndirectMediaXml(m, mediaKey, postURL)
             if mediaKeyXml = invalid then
-                Debug("Failed to resolve indirect media")
-                dlg = createBaseDialog()
-                dlg.Title = "Video Unavailable"
-                dlg.Text = "Sorry, but we can't play this video. The original video may no longer be available, or it may be in a format that isn't supported."
-                dlg.Show(true)
                 return invalid
             end if
             mediaKey = mediaKeyXml.Video.Media.Part[0]@key
