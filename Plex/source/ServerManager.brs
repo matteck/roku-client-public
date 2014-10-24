@@ -406,7 +406,7 @@ Function GetOwnedPlexMediaServers()
     if servers <> invalid then
         for each id in servers
             server = servers[id]
-            if server.owned then
+            if server.owned or MyPlexManager().IsRestricted then
                 owned.Push(server)
             end if
         next
@@ -422,7 +422,7 @@ Function GetPrimaryServer()
 
     ' TODO(schuyler): Actually define a primary server instead of using an arbitrary one
     for each server in GetOwnedPlexMediaServers()
-        if server.owned AND server.online AND NOT server.IsSecondary then
+        if server.online AND NOT server.IsSecondary then
             if m.PrimaryServer = invalid OR server.machineID = RegRead("primaryServerID", "preferences", "") then
                 Debug("Setting primary server to " + server.name)
                 m.PrimaryServer = server
