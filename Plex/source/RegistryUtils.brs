@@ -89,6 +89,9 @@ end function
 
 ' call this when switching users and startup
 sub RegInitializeUser()
+    ' reset any known primary server
+    m.PrimaryServer = invalid
+
     ' users will use the defaults prefs if: Not signed in, invalid Id, or Admin
     if NOT MyPlexManager().IsSignedIn or MyPlexManager().Admin = true or MyPlexManager().Id = invalid then
         m.userRegPrefs = invalid
