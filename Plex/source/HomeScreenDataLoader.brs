@@ -919,12 +919,11 @@ Sub homeOnFoundConnection(server, success)
 
     m.CreateServerRequests(server, true)
 
-    ' Nothing else to do for shared servers
-    if NOT server.owned then return
-
     status = m.contentArray[m.RowIndexes["misc"]]
     machineId = tostr(server.machineID)
-    if NOT server.IsSecondary AND NOT status.loadedServers.DoesExist(machineID) then
+
+    ' channel directory only valid for owned servers
+    if server.owned and NOT server.IsSecondary AND NOT status.loadedServers.DoesExist(machineID) then
         status.loadedServers[machineID] = "1"
         channelDir = CreateObject("roAssociativeArray")
         channelDir.server = server
