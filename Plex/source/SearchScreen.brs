@@ -7,7 +7,13 @@ Function createSearchScreen(item, viewController) As Object
     initBaseScreen(obj, viewController)
 
     screen = CreateObject("roSearchScreen")
-    history = CreateObject("roSearchHistory")
+
+    ' search history with multi user support
+    if GetGlobalAA().Lookup("IsAdmin") then
+        history = CreateObject("roSearchHistory")
+    else
+        history = SearchHistoryMultiUser()
+    end if
 
     screen.SetMessagePort(obj.Port)
 
@@ -143,3 +149,57 @@ Sub ssSetText(text, isComplete)
         m.Screen.SetSearchText(text)
     end if
 End Sub
+
+' roSearchHistory replacement for multi-user support
+function SearchHistoryMultiUser() as object
+    if m.SearchHistoryMultiUser = invalid then
+        obj = createObject("roAssociativeArray")
+
+        ' Methods (duplicate of ifSearchHistory)
+        obj.Push = shPush
+        obj.Clear = shClear
+        obj.GetAsArray = shGetAsArray
+
+        ' constants
+        obj.regkey = "search_history"
+        obj.delim = "{{"
+
+        m.SearchHistory = obj
+    end if
+
+    return m.SearchHistory
+end function
+
+sub shClear()
+    RegWrite(m.regKey, "", "preferences")
+end sub
+
+sub shPush(searchTerm as string)
+    history = m.GetAsArray()
+
+    ' remove the current term from history
+    for index = 0 to history.Count()-1
+        if history[index] = searchTerm then
+            history.Delete(index)
+        end if
+    end for
+
+    ' insert the search term
+    history.Unshift(searchTerm)
+
+    ' keep the history to 10 items or less
+    if history.count() > 10 then
+        history.pop()
+    end if
+
+    RegWrite(m.regKey, joinArray(history, m.delim), "preferences")
+end sub
+
+function shGetAsArray() as object
+    history = RegRead(m.regKey, "preferences", "")
+    if history <> "" then
+        return history.Tokenize(m.delim)
+    end if
+
+    return []
+end function
