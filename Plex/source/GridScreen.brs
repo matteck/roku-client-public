@@ -145,7 +145,7 @@ Function gridInitializeRows(clear=true)
         dialog.Facade = m.Facade
         dialog.Title = "Section Empty"
         dialog.Text = "This section doesn't contain any items."
-        dialog.Show()
+        dialog.Show(true)
 
         m.popOnActivate = true
         return false
@@ -396,7 +396,7 @@ Sub gridOnDataLoaded(row As Integer, data As Object, startItem As Integer, count
                     dialog = createBaseDialog()
                     dialog.Title = "Section Empty"
                     dialog.Text = "This section doesn't contain any items."
-                    dialog.Show()
+                    dialog.Show(true)
                     m.closeOnActivate = true
                 else
                     m.Screen.Close()
