@@ -392,14 +392,17 @@ Sub gridOnDataLoaded(row As Integer, data As Object, startItem As Integer, count
                 ' non-obvious reasons. Even without showing the dialog, closing
                 ' the screen has a bit of an ugly flash.
 
-                if m.Refreshing <> true then
-                    dialog = createBaseDialog()
-                    dialog.Title = "Section Empty"
-                    dialog.Text = "This section doesn't contain any items."
-                    dialog.Show(true)
-                    m.closeOnActivate = true
-                else
-                    m.Screen.Close()
+                ' defer these actions to the search data loader if applicable
+                if m.Loader.SearchTerm = invalid then
+                    if m.Refreshing <> true then
+                        dialog = createBaseDialog()
+                        dialog.Title = "Section Empty"
+                        dialog.Text = "This section doesn't contain any items."
+                        dialog.Show(true)
+                        m.closeOnActivate = true
+                    else
+                        m.Screen.Close()
+                    end if
                 end if
 
                 return
