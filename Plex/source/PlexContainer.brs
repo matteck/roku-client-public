@@ -64,7 +64,7 @@ Sub containerParseXml()
     if m.Parsed then return
 
     ' If this container has an error message, show it now
-    if isnonemptystr(m.xml@header) AND isnonemptystr(m.xml@message) then
+    if isnonemptystr(m.xml@header) AND isnonemptystr(m.xml@message) and instr(1, tostr(m.sourceurl), "/system/:/services/search") = 0 then
         dlg = createBaseDialog()
         dlg.Title = m.xml@header
         dlg.Text = m.xml@message
