@@ -463,6 +463,7 @@ Sub vcShowReleaseNotes()
     paragraphs.Push(" - Improve performance on grid screens")
     paragraphs.Push(" - Improve channel loading time when offline")
     paragraphs.Push(" - Fix possible crash due to an existing sort")
+    paragraphs.Push(" - Fix dialogs from potentially locking the UI")
 
     screen = createParagraphScreen(header, paragraphs, m)
     screen.ScreenName = "Release Notes"
