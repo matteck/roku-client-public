@@ -187,7 +187,7 @@ Sub homeCreateServerRequests(server As Object, startRequests As Boolean)
     end if
 
     ' Request recently used channels
-    if NOT MyPlexManager().IsRestricted and m.RowIndexes["channels"] >= 0 then
+    if server.owned and NOT server.IsSecondary and m.RowIndexes["channels"] >= 0 then
         channels = CreateObject("roAssociativeArray")
         channels.server = server
         channels.key = "/channels/recentlyViewed"
