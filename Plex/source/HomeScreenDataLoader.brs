@@ -179,7 +179,8 @@ Sub homeCreateServerRequests(server As Object, startRequests As Boolean)
     sections.server = server
     sections.key = "/library/sections"
 
-    if server.owned or MyPlexManager().IsRestricted then
+    ' server owned and home users (restricted or full) use the main library section
+    if server.owned or server.home then
         m.AddOrStartRequest(sections, m.RowIndexes["sections"], startRequests)
     else
         m.AddOrStartRequest(sections, m.RowIndexes["shared_sections"], startRequests)
@@ -649,14 +650,18 @@ Sub homeOnUrlEvent(msg, requestContext)
                 newServer.AccessToken = firstOf(serverElem@accessToken, MyPlexManager().AuthToken)
                 newServer.synced = (serverElem@synced = "1")
                 RegWrite(newServer.machineID, newServer.AccessToken, "server_tokens")
-                
+
                 if serverElem@owned = "1" then
                     newServer.name = firstOf(serverElem@name, newServer.name)
                     newServer.owned = true
                     newServer.local = false
                 else
-                    newServer.name = firstOf(serverElem@name, newServer.name) + " (shared by " + serverElem@sourceTitle + ")"
+                    newServer.name = firstOf(serverElem@name, newServer.name)
+                    if NOT MyPlexManager().IsRestricted then
+                        newServer.name = newServer.name + " (shared by " + serverElem@sourceTitle + ")"
+                    end if
                     newServer.owned = false
+                    newServer.home = (serverElem@home <> invalid and serverElem@home = "1")
                 end if
 
                 ' If we got local addresses, kick off simultaneous requests for all
@@ -668,7 +673,7 @@ Sub homeOnUrlEvent(msg, requestContext)
                 next
 
                 newServer.TestConnections(m)
-                m.UpdatePendingRequestsForConnectionTesting(newServer.owned, true)
+                m.UpdatePendingRequestsForConnectionTesting((newServer.owned or newServer.home), true)
 
                 Debug("Added myPlex server: " + tostr(newServer.name))
             end if
@@ -913,7 +918,7 @@ End Sub
 
 Sub homeOnFoundConnection(server, success)
     ' Decrement our pending request counts
-    m.UpdatePendingRequestsForConnectionTesting(server.owned, false)
+    m.UpdatePendingRequestsForConnectionTesting((server.owned or server.home), false)
 
     if NOT success then return
 
@@ -969,13 +974,15 @@ Sub homeOnFoundConnection(server, success)
 End Sub
 
 Sub homeUpdatePendingRequestsForConnectionTesting(owned, increment)
+    ' We can treat 'home' the same as 'owned' for now since this only
+    ' separates Sections and Global On Deck/Recently Added
     if increment then
         delta = 1
     else
         delta = -1
     end if
 
-    if owned or MyPlexManager().IsRestricted then
+    if owned then
         row_keys = ["sections", "on_deck", "recently_added"]
         if owned then row_keys.Unshift("channels")
     else

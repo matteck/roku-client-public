@@ -406,7 +406,7 @@ Function GetOwnedPlexMediaServers()
     if servers <> invalid then
         for each id in servers
             server = servers[id]
-            if server.owned or MyPlexManager().IsRestricted then
+            if server.owned or server.home then
                 owned.Push(server)
             end if
         next

@@ -19,6 +19,7 @@ Function MyPlexManager() As Object
 
         ' Masquerade as a basic Plex Media Server
         obj.owned = false
+        obj.home = false
         obj.online = true
         obj.StopVideo = mpStopVideo
         obj.StartTranscode = mpStartTranscode
