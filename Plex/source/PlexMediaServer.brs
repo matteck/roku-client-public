@@ -1015,7 +1015,7 @@ Sub pmsOnUrlEvent(msg, requestContext)
         end if
 
         if isError then
-            if m.pendingRequests = 0 AND NOT m.IsAvailable AND requestContext.connectionListener <> invalid then
+            if NOT m.IsAvailable AND requestContext.connectionListener <> invalid then
                 requestContext.connectionListener.OnFoundConnection(m, false)
             end if
             return
