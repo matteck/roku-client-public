@@ -167,7 +167,7 @@ End Sub
 
 Function prefsGetEnumValue(regKey)
     pref = m.Prefs[regKey]
-    value = RegRead(regKey, "preferences", pref.default)
+    value = RegRead(regKey, "preferences", pref.default, (pref.globalPref = true))
     for each item in pref.values
         if value = item.EnumValue then
             return item.title
