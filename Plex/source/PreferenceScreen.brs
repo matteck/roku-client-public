@@ -255,8 +255,8 @@ Sub showPreferencesScreen()
     m.Screen.SetTitle("Preferences v" + GetGlobalAA().Lookup("appVersionStr"))
     m.Screen.SetHeader("Set Plex Channel Preferences")
 
-    m.AddItem({title: "Plex Media Servers"}, "servers", invalid, true)
-    m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, true)
+    m.AddItem({title: "Plex Media Servers"}, "servers", invalid, false, true)
+    m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, false, true)
     m.AddItem({title: "Quality"}, "quality", m.GetEnumValue("quality"))
     m.AddItem({title: "Remote Quality"}, "quality_remote", m.GetEnumValue("quality_remote"))
     m.AddItem({title: "Direct Play"}, "directplay", m.GetEnumValue("directplay"))
@@ -668,7 +668,7 @@ Function createAdvancedPrefsScreen(viewController) As Object
 
     obj.Screen.SetHeader("Advanced preferences don't usually need to be changed")
 
-    obj.AddItem({title: "Grid Style"}, "gridStyle", obj.GetEnumValue("gridStyle"), true)
+    obj.AddItem({title: "Grid Style"}, "gridStyle", obj.GetEnumValue("gridStyle"), false, true)
     obj.AddItem({title: "Transcoder"}, "transcoder_version", obj.GetEnumValue("transcoder_version"))
     obj.AddItem({title: "Continuous Play"}, "continuous_play", obj.GetEnumValue("continuous_play"))
     obj.AddItem({title: "H.264"}, "level", obj.GetEnumValue("level"))
