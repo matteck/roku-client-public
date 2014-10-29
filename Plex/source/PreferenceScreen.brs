@@ -660,6 +660,7 @@ Function createAdvancedPrefsScreen(viewController) As Object
         values: values,
         heading: "Choose your Grid Style ( * requires a channel restart )"
         default: "Left"
+        globalPref: true,
     }
 
     versionArr = GetGlobalAA().Lookup("rokuVersionArr")
