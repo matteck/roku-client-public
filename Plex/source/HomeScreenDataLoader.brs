@@ -440,21 +440,33 @@ Sub homeOnUrlEvent(msg, requestContext)
     if msg.GetResponseCode() <> 200 then
         Debug("Got a " + tostr(msg.GetResponseCode()) + " response from " + url + " - " + tostr(msg.GetFailureReason()))
 
-        if status <> invalid AND status.pendingRequests = 0 then
-            status.loadStatus = 2
-            if status.refreshContent <> invalid then
-                reorderMultiServerContent(status)
+        ' load the last successful cached server response
+        if requestContext.requestType = "servers" and RegRead("servers", "xml_cache") <> invalid and (msg.GetResponseCode() < 0 or msg.GetResponseCode() >= 500) then
+            Debug("Using cached servers response")
+            xml = CreateObject("roXMLElement")
+            xml.Parse(RegRead("servers", "xml_cache"))
+        else
+            if status <> invalid AND status.pendingRequests = 0 then
+                status.loadStatus = 2
+                if status.refreshContent <> invalid then
+                    reorderMultiServerContent(status)
+                end if
+                m.Listener.OnDataLoaded(requestContext.row, status.content, 0, status.content.Count(), true)
             end if
-            m.Listener.OnDataLoaded(requestContext.row, status.content, 0, status.content.Count(), true)
-        end if
 
-        return
+            return
+        end if
     else
         Debug("Got a 200 response from " + url + " (type " + tostr(requestContext.requestType) + ", row " + tostr(requestContext.row) + ")")
-    end if
+        xml = CreateObject("roXMLElement")
+        xml.Parse(msg.GetString())
 
-    xml = CreateObject("roXMLElement")
-    xml.Parse(msg.GetString())
+        ' save servers response for fallback (offline)
+        if requestContext.requestType = "servers" then
+            RegWrite("servers", msg.GetString(), "xml_cache")
+            Debug("Saved servers response to registry")
+        end if
+    end if
 
     if requestContext.requestType = "row" then
         countLoaded = 0
