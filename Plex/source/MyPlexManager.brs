@@ -418,28 +418,40 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
     req.SetPort(port)
     req.AsyncPostFromString("pin=" + pin)
 
+    result = false
     event = wait(10000, port)
-    if type(event) = "roUrlEvent" and event.GetInt() = 1 and event.GetResponseCode() = 201 then
+    if type(event) <> "roUrlEvent" or event.GetInt() <> 1 then return result
+
+    if event.GetResponseCode() <> 201 and pin = RegRead("Pin", "user_cache") then
+        Debug("Offline PIN accepted")
+        result = true
+    else
         xml = CreateObject("roXMLElement")
         xml.Parse(event.GetString())
         if xml@authenticationToken <> invalid and m.ValidateToken(xml@authenticationToken, false) then
             ' remove all auth tokens for any server
             RegDeleteSection("server_tokens")
-
-            if pin <> "" then m.PinAuthenticated = true
-            RegWrite("AuthToken", xml@authenticationToken, "myplex")
-
-            ' refresh the home screen if it exists
-            home = GetViewController().home
-            if home <> invalid then
-                home.Refresh({ myplex: "connected", servers: true, switchUser: true })
-            end if
-
-            return true
+            result = true
         end if
     end if
 
-    return false
+    if result then
+        ' cache the current users PIN info
+        if pin <> "" then
+            m.PinAuthenticated = true
+            RegWrite("Pin", pin, "user_cache")
+        else
+            RegDelete("Pin", "user_cache")
+        end if
+
+        ' refresh the home screen if it exists
+        home = GetViewController().home
+        if home <> invalid then
+            home.Refresh({ myplex: "connected", servers: true, switchUser: true })
+        end if
+    end if
+
+    return result
 end function
 
 sub mpSetOffline()
