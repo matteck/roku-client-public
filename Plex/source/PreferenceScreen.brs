@@ -256,7 +256,7 @@ Sub showPreferencesScreen()
     m.Screen.SetHeader("Set Plex Channel Preferences")
 
     m.AddItem({title: "Plex Media Servers"}, "servers", invalid, false, true)
-    m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, false, true)
+    m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, false, (MyPlexManager().IsOffline = false))
     m.AddItem({title: "Quality"}, "quality", m.GetEnumValue("quality"))
     m.AddItem({title: "Remote Quality"}, "quality_remote", m.GetEnumValue("quality_remote"))
     m.AddItem({title: "Direct Play"}, "directplay", m.GetEnumValue("directplay"))
@@ -334,6 +334,11 @@ Function prefsMainHandleMessage(msg) As Boolean
                     MyPlexManager().Disconnect()
                     m.Changes["myplex"] = "disconnected"
                     m.SetTitle(msg.GetIndex(), getCurrentMyPlexLabel())
+                else if MyPlexManager().IsOffline then
+                    dialog = createBaseDialog()
+                    dialog.Title = "Offline Mode"
+                    dialog.Text = "Your Plex account is currently offline. Please check your connection and restart channel."
+                    dialog.Show(true)
                 else
                     m.checkMyPlexOnActivate = true
                     m.myPlexIndex = msg.GetIndex()
@@ -1661,6 +1666,8 @@ End Function
 Function getCurrentMyPlexLabel() As String
     if MyPlexManager().IsSignedIn then
         return "Disconnect Plex account (" + MyPlexManager().Title + ")"
+    else if MyPlexManager().IsOffline then
+        return "Offline mode (" + MyPlexManager().Title + ")"
     else
         return "Connect Plex account"
     end if
