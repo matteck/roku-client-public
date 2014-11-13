@@ -109,7 +109,7 @@ End Function
 
 Function vcCreateHomeScreen() as dynamic
     ' Verify the Users PIN if protected
-    if MyPlexManager().IsSignedIn and MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
+    if (MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
         ' only show the user list and pin entry once.
         if m.showUserList <> invalid then return invalid
         m.showUserList = true
