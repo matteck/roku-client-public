@@ -19,7 +19,7 @@ sub homeusersShow()
     focusedIndex = 0
     MyPlexManager().UpdateHomeUsers()
     for each user in MyPlexManager().homeUsers
-        if tostr(user.protected) = "1" then
+        if tostr(user.protected) = "1" or tostr(user.protected) = "true" then
             user.SDPosterUrl = "file://pkg:/images/lock_192x192.png"
             user.HDPosterUrl = "file://pkg:/images/lock_192x192.png"
         else
@@ -27,7 +27,7 @@ sub homeusersShow()
             user.HDPosterUrl = "file://pkg:/images/unlock_192x192.png"
         end if
 
-        if tostr(user.admin) = "1" then
+        if tostr(user.admin) = "1" or tostr(user.admin) = "true" then
             user.ShortDescriptionLine1 = "Admin"
         else
             user.ShortDescriptionLine1 = ""
@@ -65,7 +65,7 @@ function homeusersHandleMessage(msg as object) as boolean
                 user = m.contentarray[msg.GetIndex()]
 
                 ' check if the user is protected and show a PIN screen
-                if tostr(user.protected) = "1" then
+                if tostr(user.protected) = "1" or tostr(user.protected) = "true" then
                     screen = createHomeUserPinScreen(m.ViewController, user.title, user.id)
                     screen.Show()
                     authorized = screen.authorized

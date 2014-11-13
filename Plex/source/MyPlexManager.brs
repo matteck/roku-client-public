@@ -387,6 +387,9 @@ sub mpUpdateHomeUsers()
     ' ignore request and clear any home users we are not signed in
     if m.IsSignedIn = false then
         m.homeUsers.clear()
+        if m.IsOffline then
+            m.homeUsers.push(MyPlexManager())
+        end if
         return
     end if
 
