@@ -13,6 +13,7 @@ Function MyPlexManager() As Object
         obj.CreateRequest = mpCreateRequest
         obj.ValidateToken = mpValidateToken
         obj.Disconnect = mpDisconnect
+        obj.SetOffline = mpSetOffline
 
         obj.ExtraHeaders = {}
         obj.ExtraHeaders["X-Plex-Provides"] = "player"
@@ -38,6 +39,7 @@ Function MyPlexManager() As Object
         obj.ExecutePostCommand = mpExecutePostCommand
 
         obj.IsSignedIn = false
+        obj.IsOffline = false
         obj.IsPlexPass = false
         obj.IsRestricted = false
         obj.HasQueue = false
@@ -184,6 +186,14 @@ Sub mpProcessAccountResponse(event)
         ' reset the current admin state
         GetGlobalAA().AddReplace("IsAdmin", m.Admin)
 
+        ' cache the current user for offline mode
+        RegWrite("AuthToken", xml@authenticationToken, "myplex")
+        RegWrite("Title", m.Title, "user_cache")
+        RegWrite("Id", m.Id, "user_cache")
+        RegWrite("Protected", tostr(m.Protected), "user_cache")
+        RegWrite("IsRestricted", tostr(m.IsRestricted), "user_cache")
+        RegWrite("Admin", tostr(m.Admin), "user_cache")
+
         ' reset registry user
         RegInitializeUser()
     else
@@ -197,7 +207,7 @@ Sub mpProcessAccountResponse(event)
         if responseCode = "401" then
             m.Disconnect()
         else
-            m.IsSignedIn = false
+            m.SetOffline()
         end if
     end if
 End Sub
@@ -246,6 +256,7 @@ Sub mpDisconnect()
     RegDelete("AuthToken", "myplex")
     ' remove all auth tokens for any server
     RegDeleteSection("server_tokens")
+    RegDeleteSection("user_cache")
     ' reset the current admin state
     GetGlobalAA().AddReplace("IsAdmin", true)
 
@@ -430,3 +441,23 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
 
     return false
 end function
+
+sub mpSetOffline()
+    m.IsSignedIn = false
+
+    ' set a couple variables needed for offline mode
+    m.AuthToken = RegRead("AuthToken", "myplex")
+    if m.AuthToken = invalid then return
+
+    Debug("Setting plex account in offline mode")
+    m.IsOffline = true
+    m.Id = RegRead("Id", "user_cache")
+    m.Title = RegRead("Title", "user_cache")
+    m.Protected = (RegRead("Pin", "user_cache") <> invalid)
+    m.IsRestricted = (RegRead("IsRestricted", "user_cache", "false") = "true")
+    m.Admin = (RegRead("Admin", "user_cache", "false") = "true")
+    GetGlobalAA().AddReplace("IsAdmin", m.Admin)
+
+    ' reset registry user
+    RegInitializeUser()
+end sub
