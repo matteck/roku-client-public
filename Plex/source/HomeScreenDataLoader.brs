@@ -120,7 +120,7 @@ Sub homeSetupRows()
     for each row in rows
         if row.visibility_key <> invalid and RegRead(row.visibility_key, "preferences", "") = "hidden" then
             m.RowIndexes[row.key] = -1
-        else if row.account_required and MyPlexManager().IsSignedIn = false then
+        else if row.account_required and (MyPlexManager().IsSignedIn = false and MyPlexManager().IsOffline = false) then
             m.RowIndexes[row.key] = -1
         else if row.restricted = true and MyPlexManager().IsRestricted = true then
             m.RowIndexes[row.key] = -1
@@ -137,8 +137,8 @@ Sub homeSetupRows()
         m.contentArray[m.RowIndexes["misc"]].content.Push(m.homeUsersItem)
     end if
 
-    ' Kick off myPlex requests if we're signed in.
-    if MyPlexManager().IsSignedIn then
+    ' Kick off myPlex requests if we're signed in (or token exists for offline access)
+    if MyPlexManager().IsSignedIn or MyPlexManager().IsOffline then
         m.CreateMyPlexRequests(false)
         m.UpdatePendingRequestsForConnectionTesting(true, true)
         m.UpdatePendingRequestsForConnectionTesting(false, true)
@@ -232,7 +232,8 @@ End Sub
 Sub homeCreateMyPlexRequests(startRequests As Boolean)
     myPlex = MyPlexManager()
 
-    if NOT myPlex.IsSignedIn then return
+    ' Kick off myPlex requests if we're signed in (or token exists for offline access)
+    if NOT myPlex.IsSignedIn and NOT MyPlexManager().IsOffline then return
 
     ' Find any servers linked through myPlex
     httpRequest = myPlex.CreateRequest("", "/pms/servers?includeLite=1")
@@ -331,7 +332,10 @@ Function homeLoadMoreContent(focusedIndex, extraRows=0)
         if NOT myPlex.IsSignedIn then
             m.Listener.OnDataLoaded(m.RowIndexes["queue"], [], 0, 0, true)
             m.Listener.OnDataLoaded(m.RowIndexes["recommendations"], [], 0, 0, true)
-            m.Listener.OnDataLoaded(m.RowIndexes["shared_sections"], [], 0, 0, true)
+            ' offline access may contain shared sections
+            if NOT MyPlexManager().IsOffline then
+                m.Listener.OnDataLoaded(m.RowIndexes["shared_sections"], [], 0, 0, true)
+            end if
         end if
 
         m.Listener.hasBeenFocused = false

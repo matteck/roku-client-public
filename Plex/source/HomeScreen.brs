@@ -91,7 +91,7 @@ Sub homeScreenActivate(priorScreen)
 End Sub
 
 Sub homeScreenSetBreadcrumbs()
-    if MyPlexManager().homeUsers.count() > 0 then
+    if MyPlexManager().homeUsers.count() > 0 or MyPlexManager().IsOffline then
         userInfo = firstOf(MyPlexManager().Title, "")
     else
         userInfo = ""

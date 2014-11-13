@@ -93,7 +93,7 @@ sub RegInitializeUser()
     m.PrimaryServer = invalid
 
     ' users will use the defaults prefs if: Not signed in, invalid Id, or Admin
-    if NOT MyPlexManager().IsSignedIn or MyPlexManager().Admin = true or MyPlexManager().Id = invalid then
+    if (MyPlexManager().IsSignedIn = false and MyPlexManager().IsOffline = false) or MyPlexManager().Admin = true or MyPlexManager().Id = invalid then
         m.userRegPrefs = invalid
         return
     end if
