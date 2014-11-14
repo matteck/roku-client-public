@@ -96,6 +96,7 @@ Function mpValidateToken(token, async) As Boolean
     if async then
         context = CreateObject("roAssociativeArray")
         context.requestType = "account"
+        context.timeout = 10000
         GetViewController().StartRequest(req, m, context)
     else
         port = CreateObject("roMessagePort")
