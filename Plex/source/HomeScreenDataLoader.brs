@@ -239,6 +239,10 @@ Sub homeCreateMyPlexRequests(startRequests As Boolean)
     httpRequest = myPlex.CreateRequest("", "/pms/servers?includeLite=1")
     context = CreateObject("roAssociativeArray")
     context.requestType = "servers"
+
+    ' quick timeout/short-lived request if offline (reuse servers OnUrlEvent logic)
+    if MyPlexManager().IsOffline then context.timeout = 1
+
     GetViewController().StartRequest(httpRequest, m, context)
 
     ' Queue and recommendations requests
