@@ -1069,6 +1069,7 @@ Sub pmsTestConnections(listener)
         context.requestType = "connection"
         context.connectionUrl = connectionUrl
         context.connectionListener = listener
+        context.timeout = 5000
         m.pendingRequests = m.pendingRequests + 1
         GetViewController().StartRequest(request, m, context)
 
