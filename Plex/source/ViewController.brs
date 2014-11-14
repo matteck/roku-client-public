@@ -754,6 +754,19 @@ Function vcProcessOneMessage(timeout)
         end if
     end if
 
+    ' Check for expired url requests
+    for each requestID in m.PendingRequests
+        request = m.PendingRequests[requestId]
+        if request <> invalid and request.timer <> invalid and request.timer.IsExpired() then
+            Debug("Cancel expired pending request")
+            request.Request.AsyncCancel()
+            m.PendingRequests.Delete(requestID)
+            if request.listener <> invalid and type(request.listener.OnUrlEvent) = "roFunction" then
+                request.listener.OnUrlEvent(fakeUrlResponse(requestID.toInt()), request)
+            end if
+        end if
+    end for
+
     ' Check for any expired timers
     timeout = 0
     for each timerID in m.Timers
@@ -936,6 +949,12 @@ Function vcStartRequest(request, listener, context, body=invalid) As Boolean
     end if
 
     if started then
+        ' add a timer to the request (to cancel) if requested.
+        if context.timeout <> invalid then
+            context.timer = createTimer()
+            context.timer.setDuration(context.timeout)
+        end if
+
         id = request.GetIdentity().tostr()
         m.PendingRequests[id] = context
 

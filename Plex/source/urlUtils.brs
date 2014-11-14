@@ -166,3 +166,19 @@ Function GetToStringWithTimeout(request As Object, seconds as Integer) as String
 
     return str
 End Function
+
+' ability to handle canceled async requests (passed to onUrlEvent)
+' note: returned obj will be an AA and not a "roUrlEvent"
+function fakeUrlResponse(id as integer) as object
+    obj = CreateObject("roAssociativeArray")
+    obj.GetInt = function() : return 1 : end function
+    obj.GetResponseCode = function() : return -28 : end function
+    obj.GetFailureReason = function() : return "canceled request" : end function
+    obj.GetString = function() : return "" : end function
+    obj.GetSourceIdentity = function() : return id : end function
+    obj.GetResponseHeaders = function() : return {} : end function
+    obj.GetResponseHeadersArray = function() : return [] : end function
+    ' not implemented, or used
+    ' GetTargetIpAddress() as String: Returns the IP address of the destination.
+    return obj
+end function
