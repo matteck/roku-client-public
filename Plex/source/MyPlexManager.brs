@@ -190,7 +190,6 @@ Sub mpProcessAccountResponse(event)
         RegWrite("AuthToken", xml@authenticationToken, "myplex")
         RegWrite("Title", m.Title, "user_cache")
         RegWrite("Id", m.Id, "user_cache")
-        RegWrite("Protected", tostr(m.Protected), "user_cache")
         RegWrite("IsRestricted", tostr(m.IsRestricted), "user_cache")
         RegWrite("Admin", tostr(m.Admin), "user_cache")
 
