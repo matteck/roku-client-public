@@ -414,32 +414,37 @@ sub mpUpdateHomeUsers()
 end sub
 
 function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
-    ' build path and post to myplex to swith the user
-    path = "/api/home/users/" + userid + "/switch"
-    req = m.CreateRequest("", path)
-    port = CreateObject("roMessagePort")
-    req.SetPort(port)
-    req.AsyncPostFromString("pin=" + pin)
-
     result = false
-    event = wait(10000, port)
-    if type(event) <> "roUrlEvent" or event.GetInt() <> 1 then return result
 
-    if event.GetResponseCode() <> 201 and pin = RegRead("Pin", "user_cache") then
-        Debug("Offline PIN accepted")
-        result = true
-    else
-        xml = CreateObject("roXMLElement")
-        xml.Parse(event.GetString())
-        if xml@authenticationToken <> invalid and m.ValidateToken(xml@authenticationToken, false) then
-            ' remove all auth tokens for any server
-            RegDeleteSection("server_tokens")
+    if m.IsOffline then
+        if pin = firstOf(RegRead("Pin", "user_cache"), "") then
+            Debug("Offline PIN accepted")
             result = true
+        end if
+    else
+        ' build path and post to myplex to swith the user
+        path = "/api/home/users/" + userid + "/switch"
+        req = m.CreateRequest("", path)
+        port = CreateObject("roMessagePort")
+        req.SetPort(port)
+        req.AsyncPostFromString("pin=" + pin)
+
+        event = wait(10000, port)
+
+        if type(event) = "roUrlEvent" and event.GetInt() = 1 then
+            xml = CreateObject("roXMLElement")
+            xml.Parse(event.GetString())
+            if xml@authenticationToken <> invalid and m.ValidateToken(xml@authenticationToken, false) then
+                ' remove all auth tokens for any server
+                RegDeleteSection("server_tokens")
+                result = true
+            end if
         end if
     end if
 
     if result then
         ' cache the current users PIN info
+        ' TODO(rob): use hashed pin (e.g. admin -> protected user switch)
         if pin <> "" then
             m.PinAuthenticated = true
             RegWrite("Pin", pin, "user_cache")
