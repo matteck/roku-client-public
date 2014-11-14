@@ -393,7 +393,7 @@ Function homeLoadMoreContent(focusedIndex, extraRows=0)
     else
         ' Special case, if we try loading the Misc row and have no servers,
         ' this is probably a first run scenario, try to be helpful.
-        if loadingRow = m.RowIndexes["misc"] AND RegRead("serverList", "servers") = invalid AND NOT myPlex.IsSignedIn then
+        if loadingRow = m.RowIndexes["misc"] AND RegRead("serverList", "servers") = invalid AND NOT myPlex.IsSignedIn AND NOT myPlex.IsOffline then
             if RegRead("autodiscover", "preferences", "1") = "1" then
                 if m.GdmTimer = invalid then
                     ' Give GDM discovery a chance...
