@@ -76,6 +76,11 @@ function homeusersHandleMessage(msg as object) as boolean
 
                 if authorized then
                     m.screen.Close()
+                else
+                    dialog = createBaseDialog()
+                    dialog.Title = "User Switch Failed"
+                    dialog.Text = "An error occurred while trying to switch users. Please check your connection and try again."
+                    dialog.Show(true)
                 end if
             else if command = "close" then
                 m.screen.Close()
