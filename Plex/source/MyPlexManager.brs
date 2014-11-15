@@ -46,6 +46,7 @@ Function MyPlexManager() As Object
         obj.Username = invalid
         obj.EmailAddress = invalid
         obj.RefreshAccountInfo = mpRefreshAccountInfo
+        obj.PinAuthenticated = false
 
         obj.TranscodeServer = invalid
         obj.CheckTranscodeServer = mpCheckTranscodeServer
@@ -193,6 +194,13 @@ Sub mpProcessAccountResponse(event)
         RegWrite("Id", m.Id, "user_cache")
         RegWrite("IsRestricted", tostr(m.IsRestricted), "user_cache")
         RegWrite("Admin", tostr(m.Admin), "user_cache")
+
+        ' cache/remove PIN for offline mode
+        if xml@pin <> invalid and xml@pin <> "" then
+            RegWrite("Pin", xml@pin, "user_cache")
+        else
+            RegDelete("Pin", "user_cache")
+        end if
 
         ' reset registry user
         RegInitializeUser()
@@ -417,8 +425,9 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
     result = false
 
     if m.IsOffline then
-        if pin = firstOf(RegRead("Pin", "user_cache"), "") then
+        if createDigest(pin + m.AuthToken, "sha256") = firstOf(RegRead("Pin", "user_cache"), "") then
             Debug("Offline PIN accepted")
+            m.PinAuthenticated = true
             result = true
         end if
     else
@@ -443,14 +452,7 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
     end if
 
     if result then
-        ' cache the current users PIN info
-        ' TODO(rob): use hashed pin (e.g. admin -> protected user switch)
-        if pin <> "" then
-            m.PinAuthenticated = true
-            RegWrite("Pin", pin, "user_cache")
-        else
-            RegDelete("Pin", "user_cache")
-        end if
+        if m.Protected then m.PinAuthenticated = true
 
         ' refresh the home screen if it exists
         home = GetViewController().home
