@@ -64,8 +64,9 @@ function homeusersHandleMessage(msg as object) as boolean
             if command = "user" then
                 user = m.contentarray[msg.GetIndex()]
 
-                ' check if the user is protected and show a PIN screen
-                if tostr(user.protected) = "1" or tostr(user.protected) = "true" then
+                ' check if the user is protected and show a PIN screen (allow admin bypass)
+                adminBypassPin = (MyPlexManager().admin = true and MyPlexManager().IsSignedIn and (MyPlexManager().Protected = false or MyPlexManager().PinAuthenticated))
+                if NOT adminBypassPin and (tostr(user.protected) = "1" or tostr(user.protected) = "true") then
                     screen = createHomeUserPinScreen(m.ViewController, user.title, user.id)
                     screen.Show()
                     authorized = screen.authorized
