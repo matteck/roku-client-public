@@ -907,7 +907,7 @@ Sub homeOnTimerExpired(timer)
             index = m.RowIndexes[row_key]
             if index >= 0 then
                 status = m.contentArray[index]
-                if status.pendingRequests = 0 AND status.content.Count() = 0 then
+                if status.pendingRequests <= 0 AND status.content.Count() = 0 then
                     status.loadStatus = 2
                     m.Listener.OnDataLoaded(index, status.content, 0, status.content.Count(), true)
                 end if
