@@ -416,3 +416,11 @@ Function JoinArray(arr, sep, key1="", key2="")
 
     return result
 End Function
+
+Function createDigest(value as string, alg="sha256" as string) as string
+    ba = CreateObject("roByteArray")
+    ba.FromAsciiString(value)
+    digest = CreateObject("roEVPDigest")
+    digest.Setup(alg)
+    return digest.Process(ba)
+end Function
