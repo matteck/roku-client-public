@@ -43,7 +43,9 @@ sub hupinRefresh()
     m.screen.addButton(0,"Cancel")
     m.screen.SetNumPinEntryFields(4)
     m.screen.EnableBackButton(true)
-    m.Screen.EnableOverlay(overlay)
+    if CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [5, 1]) then
+        m.Screen.EnableOverlay(overlay)
+    end if
 
     m.screen.show()
 end sub
