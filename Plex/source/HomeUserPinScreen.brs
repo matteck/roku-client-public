@@ -77,6 +77,9 @@ function hupinHandleMessage(msg) as boolean
         else if msg.getIndex() = 2 then
             m.pinError = false
             m.refresh()
+        else if msg.getIndex() = 1 and m.screen.pin() = "" then
+            m.pinError = true
+            m.refresh()
         else if msg.getIndex() = 1 then
             m.authorized = MyPlexManager().SwitchHomeUser(m.id, m.screen.pin())
             if m.authorized then
