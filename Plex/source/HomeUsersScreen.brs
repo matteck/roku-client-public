@@ -72,15 +72,17 @@ function homeusersHandleMessage(msg as object) as boolean
                     authorized = screen.authorized
                 else
                     authorized = MyPlexManager().SwitchHomeUser(user.id)
+                    ' Show a warning on switch failure (PIN screen does the same)
+                    if NOT authorized then
+                        dialog = createBaseDialog()
+                        dialog.Title = "User Switch Failed"
+                        dialog.Text = "An error occurred while trying to switch users. Please check your connection and try again."
+                        dialog.Show(true)
+                    end if
                 end if
 
                 if authorized then
                     m.screen.Close()
-                else
-                    dialog = createBaseDialog()
-                    dialog.Title = "User Switch Failed"
-                    dialog.Text = "An error occurred while trying to switch users. Please check your connection and try again."
-                    dialog.Show(true)
                 end if
             else if command = "close" then
                 m.screen.Close()
