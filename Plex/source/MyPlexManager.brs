@@ -174,11 +174,10 @@ Sub mpProcessAccountResponse(event)
         ' update the list of users in the home
         m.UpdateHomeUsers()
 
-        ' set the users protected and admin keys
+        ' set admin attribute for the user
         if m.homeUsers.count() > 0 then
             for each user in m.homeUsers
                 if m.id = user.id then
-                    m.Protected = (tostr(user.protected) = "1")
                     m.Admin = (tostr(user.admin) = "1")
                     exit for
                 end if
@@ -201,6 +200,7 @@ Sub mpProcessAccountResponse(event)
         else
             RegDelete("Pin", "user_cache")
         end if
+        m.Protected = (RegRead("Pin", "user_cache") <> invalid)
 
         ' reset registry user
         RegInitializeUser()
