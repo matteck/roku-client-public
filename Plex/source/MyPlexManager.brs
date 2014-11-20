@@ -212,7 +212,7 @@ Sub mpProcessAccountResponse(event)
         end if
 
         Debug("Failed to validate myPlex token: ResponseCode=" + responseCode)
-        if responseCode = "401" then
+        if val(responseCode) >= 400 and val(responseCode) < 500 then
             m.Disconnect()
         else
             m.SetOffline()
