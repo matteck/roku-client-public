@@ -605,9 +605,11 @@ Function ProcessNavigationHome() As Boolean
     if NOT ValidateRemoteControlRequest(m) then return true
     ProcessCommandID(m.request)
 
-    context = CreateObject("roAssociativeArray")
-    context.OnAfterClose = CloseScreenUntilHomeVisible
-    context.OnAfterClose()
+    if GetGlobal("screenIsLocked") = invalid then
+        context = CreateObject("roAssociativeArray")
+        context.OnAfterClose = CloseScreenUntilHomeVisible
+        context.OnAfterClose()
+    end if
 
     m.simpleOK("")
     return true

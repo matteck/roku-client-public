@@ -15,6 +15,7 @@ Function createViewController() As Object
     controller.GlobalMessagePort = CreateObject("roMessagePort")
 
     controller.CreateHomeScreen = vcCreateHomeScreen
+    controller.CreateLockScreen = vcCreateLockScreen
     controller.CreateScreenForItem = vcCreateScreenForItem
     controller.CreateTextInputScreen = vcCreateTextInputScreen
     controller.CreateEnumInputScreen = vcCreateEnumInputScreen
@@ -48,6 +49,7 @@ Function createViewController() As Object
     controller.Show = vcShow
     controller.ProcessOneMessage = vcProcessOneMessage
     controller.OnInitialized = vcOnInitialized
+    controller.OnScreensaver = vcOnScreensaver
     controller.UpdateScreenProperties = vcUpdateScreenProperties
     controller.AddBreadcrumbs = vcAddBreadcrumbs
 
@@ -703,6 +705,10 @@ Sub vcShow()
 End Sub
 
 Function vcProcessOneMessage(timeout)
+    if RegRead("screensaverActivated") <> invalid then
+        m.OnScreensaver()
+    end if
+
     m.WebServer.prewait()
     msg = wait(timeout, m.GlobalMessagePort)
     if msg <> invalid then
@@ -1038,4 +1044,25 @@ End Sub
 
 Sub createScreenForItemCallback()
     GetViewController().CreateScreenForItem(m.Item, invalid, [firstOf(m.Heading, "")])
+End Sub
+
+Sub vcOnScreensaver()
+    Debug("screensaver started")
+    ' run once, remove registry status
+    RegDelete("screensaverActivated")
+
+    m.CreateLockScreen()
+End Sub
+
+Sub vcCreateLockScreen()
+    ' ignore if NOT signed in/offline and NOT protected
+    if NOT ((MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and MyPlexManager().Protected = true) then return
+
+    Debug("Create lock screen and global lock")
+    GetGlobalAA().AddReplace("screenIsLocked", "true")
+    MyPlexManager().PinAuthenticated = false
+
+    lockScreen = createHomeUsersScreen(m)
+    m.InitializeOtherScreen(lockScreen, ["Home Users: Lock Screen"])
+    lockScreen.Show()
 End Sub

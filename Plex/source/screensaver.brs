@@ -2,6 +2,8 @@
 Sub RunScreenSaver()
     m.RegistryCache = CreateObject("roAssociativeArray")
     mode = RegRead("screensaver", "preferences", "random")
+    Debug("Notify channel: screensaver is activated")
+    RegWrite("screensaverActivated", "true")
 
     if mode <> "disabled" then
         initGlobals()

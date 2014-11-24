@@ -6,6 +6,7 @@ function createHomeUsersScreen(viewController as object) as object
     screen.SetMessagePort(obj.Port)
     screen.SetHeader("User Selection")
     obj.screen = screen
+    obj.userSelectionScreen = true
 
     obj.Show = homeusersShow
     obj.HandleMessage = homeusersHandleMessage
@@ -16,6 +17,15 @@ function createHomeUsersScreen(viewController as object) as object
 end function
 
 sub homeusersShow()
+    ' Use a facade (roImageCanvas) to lock the screens below our stack. We need
+    ' to disallow all remote buttons, specificialy the back button.
+    if GetGlobal("screenIsLocked") <> invalid and m.facade = invalid then
+        facade = CreateObject("roImageCanvas")
+        facade.SetLayer(0, {Color:"#ff1f1f1f", CompositionMode:"Source"})
+        facade.Show()
+        m.facade = facade
+    end if
+
     focusedIndex = 0
     MyPlexManager().UpdateHomeUsers()
     for each user in MyPlexManager().homeUsers
@@ -39,11 +49,14 @@ sub homeusersShow()
         m.AddItem(user, "user")
     end for
 
-    if GetViewController().screens.count() = 1 then
-        m.AddItem({title: "Exit", SDPosterUrl: "", HDPosterUrl: ""}, "close")
+    if GetGlobal("screenIsLocked") <> invalid then
+        button = { title: "Exit", command: "exit" }
+    else if GetViewController().screens.count() = 1 then
+        button = { title: "Exit", command: "close" }
     else
-        m.AddItem({title: "Close", SDPosterUrl: "", HDPosterUrl: ""}, "close")
+        button = { title: "Close", command: "close" }
     end if
+    m.AddItem({title: button.title, SDPosterUrl: "", HDPosterUrl: ""}, button.command)
 
     m.screen.SetFocusedListItem(focusedIndex)
 
@@ -58,7 +71,17 @@ function homeusersHandleMessage(msg as object) as boolean
 
         if msg.isScreenClosed() then
             Debug("Exiting homeusers screen")
+            ' Recreate this lock/user screen if still locked, normally due to user pressing back
+            if GetGlobal("screenIsLocked") <> invalid then
+                GetViewController().CreateLockScreen()
+            end if
+            if m.facade <> invalid then m.facade.close()
             m.ViewController.PopScreen(m)
+            ' close the previous screen if the user was idle on a user selection screen
+            screen = m.ViewController.screens.peek()
+            if GetGlobal("screenIsLocked") = invalid and screen <> invalid and screen.userSelectionScreen = true then
+                screen.screen.close()
+            end if
         else if msg.isListItemSelected() then
             command = m.GetSelectedCommand(msg.GetIndex())
             if command = "user" then
@@ -82,10 +105,14 @@ function homeusersHandleMessage(msg as object) as boolean
                 end if
 
                 if authorized then
+                    Debug("Remove global screen lock")
+                    GetGlobalAA().Delete("screenIsLocked")
                     m.screen.Close()
                 end if
             else if command = "close" then
                 m.screen.Close()
+            else if command = "exit" then
+                end
             end if
         end if
     end if
