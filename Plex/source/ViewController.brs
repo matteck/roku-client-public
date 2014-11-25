@@ -113,7 +113,8 @@ Function vcCreateHomeScreen() as dynamic
     ' show the user list on startup for multi-user homes or if the last user is protected
     isProtectedUser = (MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true))
     isMultiUserHome = (MyPlexManager().homeUsers.count() > 1)
-    if (MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and NOT (MyPlexManager().switchSuccess = true) and (isProtectedUser or isMultiUserHome) then
+    isAutoLogin = (RegRead("autologin", "preferences", "disabled", true) = "enabled")
+    if NOT isAutoLogin and (MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and NOT (MyPlexManager().switchSuccess = true) and (isProtectedUser or isMultiUserHome) then
         ' only show the user list and pin entry once.
         if m.showUserList <> invalid then return invalid
         m.showUserList = true
@@ -131,6 +132,8 @@ Function vcCreateHomeScreen() as dynamic
 
         return invalid
     else
+        ' consider user pin authed if protected when auto login is enabled
+        if isAutoLogin and isProtectedUser then MyPlexManager().PinAuthenticated = true
         screen = createHomeScreen(m)
         screen.ScreenName = "Home"
         m.InitializeOtherScreen(screen, invalid)
@@ -1052,6 +1055,8 @@ Sub vcOnScreensaver()
 End Sub
 
 Sub vcCreateLockScreen(force=false as boolean)
+    ' ignore creating lock screen if auto login is enabled
+    if (RegRead("autologin", "preferences", "disabled", true) <> "disabled") then return
     ' ignore creating (recreating) lock screen if NOT force and it's already locked/not pin authed
     if force = false and (GetGlobal("screenIsLocked") <> invalid or MyPlexManager().PinAuthenticated = false) then return
     ' ignore if NOT signed in/offline and NOT protected

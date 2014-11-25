@@ -242,6 +242,17 @@ Function createPreferencesScreen(viewController) As Object
         default: "random"
     }
 
+    autologin = [
+        { title: "Disabled", EnumValue: "disabled" },
+        { title: "Enabled", EnumValue: "enabled", ShortDescriptionLine2: "Automatically login last user" },
+    ]
+    obj.Prefs["autologin"] = {
+        values: autologin
+        heading: "Automatic Login",
+        default: "disabled",
+        globalPref: true,
+    }
+
     obj.checkMyPlexOnActivate = false
     obj.checkStatusOnActivate = false
 
@@ -257,6 +268,9 @@ Sub showPreferencesScreen()
 
     m.AddItem({title: "Plex Media Servers"}, "servers", invalid, false, true)
     m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, false, (MyPlexManager().IsOffline = false))
+    if MyPlexManager().homeUsers.count() > 0 or MyPlexManager().IsOffline then
+        m.AddItem({title: "Automatic Login"}, "autologin", m.GetEnumValue("autologin"), false, true)
+    end if
     m.AddItem({title: "Quality"}, "quality", m.GetEnumValue("quality"))
     m.AddItem({title: "Remote Quality"}, "quality_remote", m.GetEnumValue("quality_remote"))
     m.AddItem({title: "Direct Play"}, "directplay", m.GetEnumValue("directplay"))
@@ -375,7 +389,7 @@ Function prefsMainHandleMessage(msg) As Boolean
                 dialog.SetButton("close", "Close")
                 dialog.HandleButton = channelStatusHandleButton
                 dialog.Show()
-            else if command = "quality" OR command = "quality_remote" OR command = "level" OR command = "fivepointone" OR command = "directplay" OR command = "screensaver" then
+            else if command = "quality" OR command = "quality_remote" OR command = "level" OR command = "fivepointone" OR command = "directplay" OR command = "screensaver" or command = "autologin" then
                 m.HandleEnumPreference(command, msg.GetIndex())
             else if command = "slideshow" then
                 screen = createSlideshowPrefsScreen(m.ViewController)
