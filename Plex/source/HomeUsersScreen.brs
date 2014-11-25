@@ -73,7 +73,7 @@ function homeusersHandleMessage(msg as object) as boolean
             Debug("Exiting homeusers screen")
             ' Recreate this lock/user screen if still locked, normally due to user pressing back
             if GetGlobal("screenIsLocked") <> invalid then
-                GetViewController().CreateLockScreen()
+                GetViewController().CreateLockScreen(true)
             end if
             if m.facade <> invalid then m.facade.close()
             m.ViewController.PopScreen(m)

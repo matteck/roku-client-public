@@ -1054,7 +1054,9 @@ Sub vcOnScreensaver()
     m.CreateLockScreen()
 End Sub
 
-Sub vcCreateLockScreen()
+Sub vcCreateLockScreen(force=false as boolean)
+    ' ignore creating (recreating) lock screen if NOT force and it's already locked/not pin authed
+    if force = false and (GetGlobal("screenIsLocked") <> invalid or MyPlexManager().PinAuthenticated = false) then return
     ' ignore if NOT signed in/offline and NOT protected
     if NOT ((MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and MyPlexManager().Protected = true) then return
 
