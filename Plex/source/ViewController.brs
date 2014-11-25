@@ -110,28 +110,23 @@ Function GetViewController()
 End Function
 
 Function vcCreateHomeScreen() as dynamic
-    ' Verify the Users PIN if protected
-    if (MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true) then
+    ' show the user list on startup for multi-user homes or if the last user is protected
+    isProtectedUser = (MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true))
+    isMultiUserHome = (MyPlexManager().homeUsers.count() > 1)
+    if (MyPlexManager().IsSignedIn or MyPlexManager().IsOffline) and NOT (MyPlexManager().switchSuccess = true) and (isProtectedUser or isMultiUserHome) then
         ' only show the user list and pin entry once.
         if m.showUserList <> invalid then return invalid
         m.showUserList = true
 
-        ' we need to have at least one screen pushed to the stack, otherwise when
-        ' the pin screen closes, it will call this routine causing a loop. It works
-        ' well enough though because we'd need to show the user list anyways if the
-        ' user fails or wants to change the user.
         userScreen = createHomeUsersScreen(m)
         m.InitializeOtherScreen(userScreen, ["Home Users"])
         userScreen.Show()
 
-        ' show the Pin Entry screen for the user
-        screen = createHomeUserPinScreen(m, MyPlexManager().Title, MyPlexManager().Id)
-        screen.show()
-
-        if screen.authorized then
-            homeScreen = m.CreateHomeScreen()
-            userScreen.screen.close()
-            return homeScreen
+        ' TODO(rob): should we automatically show the PIN screen for the last user selected?
+        ' as of now, we'll only prompt immediately if it's a single user home.
+        if isProtectedUser and NOT isMultiUserHome then
+            screen = createHomeUserPinScreen(m, MyPlexManager().Title, MyPlexManager().Id)
+            screen.show()
         end if
 
         return invalid

@@ -453,6 +453,7 @@ function mpSwitchHomeUser(userId as string, pin="" as dynamic) as boolean
 
     if result then
         if m.Protected then m.PinAuthenticated = true
+        m.switchSuccess = true
 
         ' refresh the home screen if it exists
         home = GetViewController().home
