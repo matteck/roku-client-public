@@ -707,6 +707,8 @@ End Sub
 Function vcProcessOneMessage(timeout)
     if RegRead("screensaverActivated") <> invalid then
         m.OnScreensaver()
+    else if GetGlobal("roDeviceInfo").TimeSinceLastKeyPress() > GetGlobal("plexIdleTimeout") then
+        m.CreateLockScreen()
     end if
 
     m.WebServer.prewait()

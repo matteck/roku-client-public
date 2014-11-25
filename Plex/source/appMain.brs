@@ -90,6 +90,9 @@ End Sub
 
 Sub initGlobals()
     device = CreateObject("roDeviceInfo")
+    app = CreateObject("roAppManager")
+    GetGlobalAA().AddReplace("roDeviceInfo", device)
+    GetGlobalAA().AddReplace("roAppManager", app)
 
     version = device.GetVersion()
     major = Mid(version, 3, 1).toInt()
@@ -100,8 +103,21 @@ Sub initGlobals()
     GetGlobalAA().AddReplace("rokuVersionStr", versionStr)
     GetGlobalAA().AddReplace("rokuVersionArr", [major, minor, build])
 
+    ' Idle Timeout (PIN lock). Utilize screensaver + screensaver timeout, or 5 minutes
+    ' if we know the screensaver is disabled (fw 5.6+), or fallback to 30 minutes.
+    if CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [5, 6]) then
+        if app.GetScreensaverTimeout() = 0 then
+            GetGlobalAA().AddReplace("plexIdleTimeout", 5 * 60)
+        else
+            GetGlobalAA().AddReplace("plexIdleTimeout", app.GetScreensaverTimeout() * 60)
+        end if
+    else
+        GetGlobalAA().AddReplace("plexIdleTimeout", 30 * 60)
+    end if
+
     Debug("UTC time: " + CurrentTimeAsString(false))
     Debug("Roku version: " + versionStr + " (" + version + ")")
+    Debug("Roku Idle Timeout: " + tostr(GetGlobal("plexIdleTimeout")))
 
     manifest = ReadAsciiFile("pkg:/manifest")
     lines = manifest.Tokenize(chr(10))
@@ -213,7 +229,7 @@ End Function
 
 Sub initTheme()
 
-    app = CreateObject("roAppManager")
+    app = GetGlobal("roAppManager")
     theme = CreateObject("roAssociativeArray")
 
     theme.OverhangOffsetSD_X = "42"
