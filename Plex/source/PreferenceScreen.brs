@@ -244,11 +244,11 @@ Function createPreferencesScreen(viewController) As Object
 
     autologin = [
         { title: "Disabled", EnumValue: "disabled" },
-        { title: "Enabled", EnumValue: "enabled", ShortDescriptionLine2: "Automatically login last user" },
+        { title: "Enabled", EnumValue: "enabled", ShortDescriptionLine2: "Automatically sign in last user" },
     ]
     obj.Prefs["autologin"] = {
         values: autologin
-        heading: "Automatic Login",
+        heading: "Automatically sign in",
         default: "disabled",
         globalPref: true,
     }
@@ -269,7 +269,7 @@ Sub showPreferencesScreen()
     m.AddItem({title: "Plex Media Servers"}, "servers", invalid, false, true)
     m.AddItem({title: getCurrentMyPlexLabel()}, "myplex", invalid, false, (MyPlexManager().IsOffline = false))
     if MyPlexManager().homeUsers.count() > 0 or MyPlexManager().IsOffline then
-        m.AddItem({title: "Automatic Login"}, "autologin", m.GetEnumValue("autologin"), false, true)
+        m.AddItem({title: "Automatically sign in"}, "autologin", m.GetEnumValue("autologin"), false, true)
     end if
     m.AddItem({title: "Quality"}, "quality", m.GetEnumValue("quality"))
     m.AddItem({title: "Remote Quality"}, "quality_remote", m.GetEnumValue("quality_remote"))
