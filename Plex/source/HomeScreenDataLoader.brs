@@ -704,6 +704,8 @@ Sub homeOnUrlEvent(msg, requestContext)
         timer = createTimer()
         timer.name = "configuredServerRequests"
         timer.SetDuration(50, true)
+        timer.maxDuration = 20000
+        timer.curDuration = 0
         GetViewController().AddTimer(timer, m)
     end if
 End Sub
@@ -914,8 +916,8 @@ Sub homeOnTimerExpired(timer)
             end if
         end for
     else if timer.Name = "configuredServerRequests" then
-        pendingRequests = GetGlobal("serverPendingRequests")
-        if pendingRequests = 0 then
+        pendingRequests = firstOf(GetGlobal("serverPendingRequests"), 0)
+        if pendingRequests <= 0 or timer.curDuration >= timer.maxDuration then
             Debug("Start requests for configured servers (not already online)")
             timer.Active = false
             ' Kick off requests for servers we already know about, and only
@@ -931,7 +933,10 @@ Sub homeOnTimerExpired(timer)
                 end if
             end for
         else
-            Debug("Waiting for " + tostr(pendingRequests) + " pending requests to complete before starting requests for configured servers")
+            if int(timer.curDuration) mod 3000 = 0 then
+                Debug("Waiting for " + tostr(pendingRequests) + " pending requests to complete before starting requests for configured servers")
+            end if
+            timer.curDuration = timer.curDuration + timer.DurationMillis
         end if
     end if
 End Sub
