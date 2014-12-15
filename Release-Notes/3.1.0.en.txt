@@ -1,0 +1,11 @@
+NEW:
+  - Plex Home! Fast user switching, PIN protection and more.
+  - Plex Pass benefits for users in a Home.
+  - View movie trailers and extras from movie preplay.
+
+FIXES:
+  - Offline retention for servers discovered through plex.tv.
+  - Fix dialogs from potentially locking the U.I
+  - Improve performance on grid screens.
+  - Improve channel loading time when offline.
+  - Fix possible crash due to an existing sort.
