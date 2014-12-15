@@ -705,7 +705,7 @@ End Sub
 Function vcProcessOneMessage(timeout)
     if RegRead("screensaverActivated") <> invalid then
         m.OnScreensaver()
-    else if GetGlobal("roDeviceInfo").TimeSinceLastKeyPress() > GetGlobal("plexIdleTimeout") then
+    else if CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [4, 8]) and GetGlobal("roDeviceInfo").TimeSinceLastKeyPress() > GetGlobal("plexIdleTimeout") then
         m.CreateLockScreen()
     end if
 
