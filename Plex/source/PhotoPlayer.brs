@@ -14,6 +14,8 @@ Function createPhotoPlayerScreen(context, contextIndex, viewController, shuffled
     screen.SetDisplayMode("photo-fit")
     screen.SetPeriod(RegRead("slideshow_period", "preferences", "6").toInt())
     screen.SetTextOverlayHoldTime(RegRead("slideshow_overlay", "preferences", "2500").toInt())
+    screen.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    screen.SetCertificatesDepth(5)
 
     ' Standard screen properties
     obj.Screen = screen
