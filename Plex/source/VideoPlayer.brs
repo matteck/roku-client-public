@@ -174,6 +174,7 @@ Function videoPlayerCreateVideoPlayer()
 
     if CheckMinimumVersion(rokuVersion, [4, 9]) AND videoItem.SubtitleUrl <> invalid AND RegRead("subtitle_behavior", "preferences", "override") = "override" then
         player.ShowSubtitle(true)
+        videoItem.SubtitleConfig = { ShowSubtitle: 1 }
     end if
 
     ' If we're playing the video from the server, add appropriate X-Plex
