@@ -440,6 +440,7 @@ Sub homeOnUrlEvent(msg, requestContext)
     if requestContext.row <> invalid then
         status = m.contentArray[requestContext.row]
         status.pendingRequests = status.pendingRequests - 1
+        if status.pendingRequests < 0 then status.pendingRequests = 0
     end if
 
     url = tostr(requestContext.Request.GetUrl())
