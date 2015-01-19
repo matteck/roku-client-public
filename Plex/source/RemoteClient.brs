@@ -687,5 +687,5 @@ Sub createPlayerAfterClose()
 End Sub
 
 Sub SendEcpCommand(command)
-    GetViewController().StartRequestIgnoringResponse("http://127.0.0.1:8060/keypress/" + command, "", "txt")
+    GetViewController().StartRequestIgnoringResponse("http://" + GetIPAddress() + ":8060/keypress/" + command, "", "txt")
 End Sub

@@ -424,3 +424,15 @@ Function createDigest(value as string, alg="sha256" as string) as string
     digest.Setup(alg)
     return digest.Process(ba)
 end Function
+
+Function GetIPAddress() as string
+    if NOT CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [5, 1]) then
+        addrs = GetGlobal("roDeviceInfo").GetIPAddrs()
+        addrs.Reset()
+        if addrs.IsNext() then
+            return addrs[addrs.Next()]
+        end if
+    end if
+
+    return "127.0.0.1"
+End Function
