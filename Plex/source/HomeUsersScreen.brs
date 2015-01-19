@@ -10,6 +10,7 @@ function createHomeUsersScreen(viewController as object) as object
 
     obj.Show = homeusersShow
     obj.HandleMessage = homeusersHandleMessage
+    obj.OnTimerExpired = homeusersOnTimerExpired
 
     lsInitBaseListScreen(obj)
 
@@ -59,6 +60,14 @@ sub homeusersShow()
     m.AddItem({title: button.title, SDPosterUrl: "", HDPosterUrl: ""}, button.command)
 
     m.screen.SetFocusedListItem(focusedIndex)
+
+    ' Workaround for screensaver/lockscreen issue on first gen Rokus
+    if NOT CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [5, 1]) and GetGlobal("screenIsLocked") <> invalid then
+        timer = createTimer()
+        timer.Name = "legacyScreensaverLock"
+        timer.SetDuration(5000)
+        m.viewController.AddTimer(timer, m)
+    end if
 
     m.screen.Show()
 end sub
@@ -119,3 +128,10 @@ function homeusersHandleMessage(msg as object) as boolean
 
     return handled
 end function
+
+Sub homeusersOnTimerExpired(timer)
+    if timer.Name = "legacyScreensaverLock" AND m.ViewController.IsActiveScreen(m) then
+        Debug("Send keypress to reenable internal Roku screensaver timeout")
+        SendEcpCommand("Lit_*")
+    end if
+End Sub
