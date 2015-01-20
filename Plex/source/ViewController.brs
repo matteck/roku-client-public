@@ -459,11 +459,9 @@ Sub vcShowReleaseNotes()
     paragraphs = []
     paragraphs.Push("Changes in this version include:")
 
-    paragraphs.Push(" - View movie trailers and extras from movie preplay")
-    paragraphs.Push(" - Improve performance on grid screens")
-    paragraphs.Push(" - Improve channel loading time when offline")
-    paragraphs.Push(" - Fix possible crash due to an existing sort")
-    paragraphs.Push(" - Fix dialogs from potentially locking the UI")
+    paragraphs.Push(" - Show user selection on startup.")
+    paragraphs.Push(" - Lock screen for PIN protected users.")
+    paragraphs.Push(" - New preference: Automatically sign in.")
 
     screen = createParagraphScreen(header, paragraphs, m)
     screen.ScreenName = "Release Notes"

@@ -1,0 +1,10 @@
+NEW:
+  - Show user selection on startup.
+  - Lock screen: prompt for PIN when returning from screen saver if the user is PIN protected.
+  - Automatically sign in (preference): disables user selection on startup and lock screen.
+
+FIXES:
+  - Fix Plex Companion for legacy Rokus.
+  - Fix global On Deck refresh.
+  - Fix edge case loading manually entered servers.
+  - Disconnect Plex account on 4xx sign in errors.
