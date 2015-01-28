@@ -214,6 +214,16 @@ Sub mpProcessAccountResponse(event)
         Debug("Failed to validate myPlex token: ResponseCode=" + responseCode)
         if val(responseCode) >= 400 and val(responseCode) < 500 then
             m.Disconnect()
+
+            ' Set the reauth flag and a dialog to continue or cancel reauth
+            MyPlexManager().reauth = true
+            dlg = createBaseDialog()
+            dlg.Title = "Please sign in again. Your credentials have expired."
+            dlg.Text = " "
+            dlg.SetButton("sign_in", "Sign In")
+            dlg.SetButton("ignore", "Ignore")
+            dlg.HandleButton = mpDialogHandleButton
+            dlg.Show(true)
         else
             m.SetOffline()
         end if
@@ -484,3 +494,8 @@ sub mpSetOffline()
     ' reset registry user
     RegInitializeUser()
 end sub
+
+Function mpDialogHandleButton(command, data) As Boolean
+    if command <> "sign_in" then MyPlexManager().reauth = false
+    return true
+End Function

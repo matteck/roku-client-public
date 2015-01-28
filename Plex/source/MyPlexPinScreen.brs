@@ -20,7 +20,7 @@ Function createMyPlexPinScreen(viewController As Object) As Object
     screen.AddParagraph("This screen will automatically update once your Roku player has been linked to your Plex account.")
 
     screen.AddButton(0, "get a new code")
-    screen.AddButton(1, "back")
+    screen.AddButton(1, "cancel")
 
     ' Set standard screen properties/methods
     obj.Screen = screen

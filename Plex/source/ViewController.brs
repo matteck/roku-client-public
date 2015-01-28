@@ -110,6 +110,15 @@ Function GetViewController()
 End Function
 
 Function vcCreateHomeScreen() as dynamic
+    ' Show the PIN screen if we have been flagged for reauth
+    if MyPlexManager().reauth = true then
+        MyPlexManager().reauth = false
+        screen = createMyPlexPinScreen(m)
+        m.InitializeOtherScreen(screen, invalid)
+        screen.Show()
+        return invalid
+    end if
+
     ' show the user list on startup for multi-user homes or if the last user is protected
     isProtectedUser = (MyPlexManager().Protected = true and NOT(MyPlexManager().PinAuthenticated = true))
     isMultiUserHome = (MyPlexManager().homeUsers.count() > 1)
