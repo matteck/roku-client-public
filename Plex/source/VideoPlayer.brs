@@ -142,6 +142,9 @@ Function videoPlayerCreateVideoPlayer()
         origDirectPlayOptions = invalid
     end if
 
+    ' always force direct play for plex.tv content (cloud sync)
+    if server.IsPlexTV() then m.DirectPlayOptions = 1
+
     videoItem = server.ConstructVideoItem(m.Item, startOffset, m.DirectPlayOptions < 3, m.DirectPlayOptions = 1 OR m.DirectPlayOptions = 2)
 
     if videoItem = invalid then
@@ -181,6 +184,10 @@ Function videoPlayerCreateVideoPlayer()
     ' headers.
     if server.IsRequestToServer(videoItem.StreamUrls[0]) then
         AddPlexHeaders(player, server.AccessToken)
+        if server.IsPlexTV() and MyPlexManager().IsRestricted then
+            Debug("Resolve plex.tv redirect before play for managed user")
+            videoItem.StreamUrls[0] = resolveRedirect(videoItem.StreamUrls[0], server.AccessToken)
+        end if
     end if
 
     player.SetCertificatesFile("common:/certs/ca-bundle.crt")

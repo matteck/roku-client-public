@@ -182,3 +182,22 @@ function fakeUrlResponse(id as integer) as object
     ' GetTargetIpAddress() as String: Returns the IP address of the destination.
     return obj
 end function
+
+function ResolveRedirect(url as string, token=invalid as dynamic) as string
+    http = CreateObject("roUrlTransfer")
+    http.SetUrl(url)
+    http.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    http.SetCertificatesDepth(5)
+    http.SetRequest("OPTIONS")
+
+    if token <> invalid then
+        AddPlexHeaders(http, token)
+    end if
+
+    headers = http.Head().GetResponseHeaders()
+    if headers.location <> invalid and headers.location <> url then
+        return headers.location
+    end if
+
+    return url
+end function

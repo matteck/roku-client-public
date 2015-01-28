@@ -42,6 +42,7 @@ Function newPlexMediaServer(pmsUrl, pmsName, machineID) As Object
     pms.IsRequestToServer = pmsIsRequestToServer
     pms.AddDirectPlayInfo = pmsAddDirectPlayInfo
     pms.Log = pmsLog
+    pms.IsPlexTV = pmsIsPlexTV
 
     ' Set to false if a version check fails
     pms.SupportsAudioTranscoding = true
@@ -380,7 +381,7 @@ Function pmsConstructVideoItem(item, seekValue, allowDirectPlay, forceDirectPlay
 	endif
 
     ' Indexes
-    if part <> invalid then
+    if part <> invalid and not m.IsPlexTv() then
         if part.indexes["sd"] <> invalid then video.SDBifUrl = part.indexes["sd"]
         if part.indexes["hd"] <> invalid then video.HDBifUrl = part.indexes["hd"]
     end if
@@ -1078,3 +1079,7 @@ Sub pmsTestConnections(listener)
         GetGlobalAA().AddReplace("serverPendingRequests", pending + 1)
     end for
 End Sub
+
+Function pmsIsPlexTV() as boolean
+    return (instr(1, m.serverUrl, "://plex.tv") > 0)
+End function

@@ -34,6 +34,11 @@ End Function
 Sub videoSetupButtons()
     m.ClearButtons()
 
+    ' always force direct play (no fallback) for plex.tv content (cloud sync)
+    if m.Item.server <> invalid and  m.Item.server.IsPlexTV() then
+        m.PlayButtonState = 1
+    end if
+
     m.AddButton(m.PlayButtonStates[m.PlayButtonState].label, "play")
     Debug("Can direct play = " + tostr(videoCanDirectPlay(m.media, m.Item.server)))
 
