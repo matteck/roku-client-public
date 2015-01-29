@@ -1,0 +1,3 @@
+FIXES:
+  - Cloud Sync playback for managed users.
+  - Handle invalid stored tokens on startup.
