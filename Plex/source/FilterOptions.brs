@@ -173,6 +173,7 @@ Sub foOnUrlEvent(msg, requestContext)
             value = {}
             value.key = firstOf(node@key, "")
             value.title = firstOf(node@title, "")
+            if value.title = "" or value.title = " " then value.title = "empty"
             values.Push(value)
         end for
 
