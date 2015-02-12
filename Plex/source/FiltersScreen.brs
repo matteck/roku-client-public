@@ -263,11 +263,17 @@ Function filterValuesHandleMessage(msg) As Boolean
         if msg.isScreenClosed() then
             values = []
             for each key in m.selectedValues
-                values.Push(m.optionsByKey[key])
+                if m.optionsByKey[key] <> invalid then
+                    values.Push(m.optionsByKey[key])
+                end if
             end for
-            m.FilterOptions.SetFilter(m.Item.key, values)
-            if m.Listener <> invalid then
-                m.Listener.OnUserInput(JoinArray(values, ", ", "origtitle", "title"), m)
+
+            ' set the filters if we have values or removed them all
+            if values.Count() > 0 or m.selectedValues.Count() = 0 then
+                m.FilterOptions.SetFilter(m.Item.key, values)
+                if m.Listener <> invalid then
+                    m.Listener.OnUserInput(JoinArray(values, ", ", "origtitle", "title"), m)
+                end if
             end if
 
             m.ViewController.PopScreen(m)

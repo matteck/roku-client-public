@@ -406,12 +406,14 @@ Function JoinArray(arr, sep, key1="", key2="")
 
     for each value in arr
         if type(value) = "roAssociativeArray" then value = firstOf(value[key1], value[key2])
-        if first then
-            first = false
-        else
-            result = result + sep
+        if value <> invalid then
+            if first then
+                first = false
+            else
+                result = result + sep
+            end if
+            result = result + value
         end if
-        result = result + value
     end for
 
     return result
