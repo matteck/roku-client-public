@@ -137,6 +137,7 @@ Function vcCreateHomeScreen() as dynamic
         if isProtectedUser and NOT isMultiUserHome then
             screen = createHomeUserPinScreen(m, MyPlexManager().Title, MyPlexManager().Id)
             screen.show()
+            if screen.authorized then userScreen.screen.Close()
         end if
 
         return invalid
