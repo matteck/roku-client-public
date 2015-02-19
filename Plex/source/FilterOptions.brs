@@ -129,7 +129,21 @@ Sub foOnUrlEvent(msg, requestContext)
 
     if msg.GetResponseCode() <> 200 then
         Debug("Got a " + tostr(msg.GetResponseCode()) + " response from " + tostr(url) + " - " + tostr(msg.GetFailureReason()))
-        ' TODO(schuyler): Show some sort of dialog and handle this
+        if requestContext.requestType <> "filter" then return
+
+        dialog = createBaseDialog()
+        dialog.title = "filter is empty"
+        if requestContext.filter <> invalid and requestContext.filter.origTitle <> invalid then
+            dialog.title = requestContext.filter.origTitle + " " + dialog.title
+        end if
+        dialog.Text = ""
+
+        if m.WaitingScreen <> invalid then
+            m.WaitingScreen.popOnActivate = true
+            dialog.facade = m.waitingScreen.facade
+        end if
+
+        dialog.Show(true)
         return
     end if
 
