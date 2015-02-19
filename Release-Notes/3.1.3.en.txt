@@ -1,0 +1,6 @@
+FIXES:
+ - Fix possible crash after filter request.
+ - Fix possible crash on filter selection.
+ - Fix PIN login for single user PIN protected homes.
+ - Minor style change for empty filter title.
+
