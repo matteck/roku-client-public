@@ -11,12 +11,14 @@ Function createFiltersScreen(item, viewController) As Object
     ' Standard properties for all our screen types
     obj.Item = item
     obj.Screen = screen
+    obj.ScreenName = "Filters Screen"
 
     obj.FilterOptions = item.FilterOptions
 
     obj.Show = showFiltersScreen
     obj.HandleMessage = filtersMainHandleMessage
     obj.OnUserInput = filtersOnUserInput
+    obj.Activate = filtersActivate
 
     obj.SetSelectedType = filtersSetSelectedType
 
@@ -24,6 +26,15 @@ Function createFiltersScreen(item, viewController) As Object
 
     return obj
 End Function
+
+Sub filtersActivate(screen)
+    ' Due to our facades and other anomalies with the waiting screens, it's
+    ' possible for duplicate screen types to exist. As a workaround, lets
+    ' pop the screen if the current and previous are the same type.
+    if m.ScreenName = screen.ScreenName
+        m.ViewController.PopScreen(m)
+    end if
+end sub
 
 Sub showFiltersScreen()
     if m.FilterOptions.IsInitialized() then
@@ -132,12 +143,14 @@ Function createFilterFiltersScreen(filterOptions, viewController) As Object
     ' Standard properties
     obj.Item = invalid
     obj.Screen = screen
+    obj.ScreenName = "Filters Filter Screen"
 
     obj.FilterOptions = filterOptions
 
     obj.Show = showFilterFiltersScreen
     obj.HandleMessage = filterFiltersHandleMessage
     obj.OnUserInput = filtersOnUserInput
+    obj.Activate = filtersActivate
 
     lsInitBaseListScreen(obj)
 
@@ -174,7 +187,9 @@ Function filterFiltersHandleMessage(msg) As Boolean
         else if msg.isListItemSelected() then
             m.currentIndex = msg.GetIndex()
             command = m.GetSelectedCommand(m.currentIndex)
-            if command = "close" then
+            if command = invalid then
+                m.ViewController.PopScreen(m)
+            else if command = "close" then
                 m.Screen.Close()
             else
                 filter = m.FilterOptions.filtersHash[command]
@@ -208,12 +223,14 @@ Function createFilterValuesScreen(filterOptions, item, viewController) As Object
     ' Standard properties
     obj.Item = item
     obj.Screen = screen
+    obj.ScreenName = "Filter Values Screen"
 
     obj.FilterOptions = filterOptions
 
     obj.Show = showFilterValuesScreen
     obj.HandleMessage = filterValuesHandleMessage
     obj.LabelForFilterValue = filterValuesLabelForFilterValue
+    obj.Activate = filtersActivate
 
     obj.selectedValues = {}
 
@@ -279,7 +296,9 @@ Function filterValuesHandleMessage(msg) As Boolean
             m.ViewController.PopScreen(m)
         else if msg.isListItemSelected() then
             command = m.GetSelectedCommand(msg.GetIndex())
-            if command = "close" then
+            if command = invalid then
+                m.ViewController.PopScreen(m)
+            else if command = "close" then
                 m.Screen.Close()
             else if m.Item.filterType = "boolean" then
                 if command = "1" then
@@ -315,11 +334,13 @@ Function createFilterSortsScreen(filterOptions, viewController) As Object
     ' Standard properties
     obj.Item = invalid
     obj.Screen = screen
+    obj.ScreenName = "Filter Sorts Screen"
 
     obj.FilterOptions = filterOptions
 
     obj.Show = showFilterSortsScreen
     obj.HandleMessage = filterSortsHandleMessage
+    obj.Activate = filtersActivate
 
     lsInitBaseListScreen(obj)
 
@@ -372,7 +393,9 @@ Function filterSortsHandleMessage(msg) As Boolean
             m.ViewController.PopScreen(m)
         else if msg.isListItemSelected() then
             command = m.GetSelectedCommand(msg.GetIndex())
-            if command = "close" then
+            if command = invalid then
+                m.ViewController.PopScreen(m)
+            else if command = "close" then
                 m.Screen.Close()
             else
                 if msg.GetIndex() = m.selectedIndex then
