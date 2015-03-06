@@ -203,6 +203,7 @@ Function IndirectMediaXml(server, originalKey, postURL)
 
         Debug("Fetching content for indirect video POST URL: " + postURL)
         httpRequest = server.CreateRequest("", postURL)
+        postBody = invalid
         if httpRequest.AsyncGetToString() then
             while true
                 msg = wait(60000, httpRequest.GetPort())
