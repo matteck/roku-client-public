@@ -568,7 +568,7 @@ Sub vcPushScreen(screen)
     m.screens.Push(screen)
 End Sub
 
-Sub vcPopScreen(screen)
+Sub vcPopScreen(screen, callActivate=true as boolean)
     if screen.Cleanup <> invalid then screen.Cleanup()
 
     ' Try to clean up some potential circular references
@@ -584,7 +584,6 @@ Sub vcPopScreen(screen)
         Return
     end if
 
-    callActivate = true
     screenID = screen.ScreenID.tostr()
     if screen.ScreenID <> m.screens.Peek().ScreenID then
         Debug("Trying to pop screen that doesn't match the top of our stack!")

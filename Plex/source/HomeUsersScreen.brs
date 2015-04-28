@@ -95,6 +95,7 @@ function homeusersHandleMessage(msg as object) as boolean
             command = m.GetSelectedCommand(msg.GetIndex())
             if command = "user" then
                 user = m.contentarray[msg.GetIndex()]
+                userChange = (user.id <> MyPlexManager().Id)
 
                 ' check if the user is protected and show a PIN screen (allow admin bypass)
                 adminBypassPin = (MyPlexManager().admin = true and MyPlexManager().IsSignedIn and (MyPlexManager().Protected = false or MyPlexManager().PinAuthenticated))
@@ -116,7 +117,24 @@ function homeusersHandleMessage(msg as object) as boolean
                 if authorized then
                     Debug("Remove global screen lock")
                     GetGlobalAA().Delete("screenIsLocked")
-                    m.screen.Close()
+                    ' Close all screens if the logged in users has changed.
+                    vc = GetViewController()
+                    if userChange and vc.home <> invalid then
+                        Debug("Returning to home screen due to user change")
+
+                        ' Pop all screens without activating then until home
+                        while vc.screens.Peek().screenID <> vc.home.screenID
+                            vc.PopScreen(vc.screens.Peek(), false)
+                        end while
+
+                        ' Activate the home screen
+                        screenName = firstOf(vc.home.ScreenName, "Home")
+                        Debug("Top of stack is once again: " + screenName)
+                        AnalyticsTracker().TrackScreen(screenName)
+                        vc.home.Activate({})
+                    else
+                        m.screen.Close()
+                    end if
                 end if
             else if command = "close" then
                 m.screen.Close()
