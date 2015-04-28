@@ -469,10 +469,7 @@ Sub vcShowReleaseNotes()
     paragraphs = []
     paragraphs.Push("Changes in this version include:")
 
-    paragraphs.Push(" - Show user selection on startup.")
-    paragraphs.Push(" - Lock screen for PIN protected users.")
-    paragraphs.Push(" - New preference: Automatically sign in.")
-    paragraphs.Push(" - Fix Cloud Sync playback for managed users.")
+    paragraphs.Push(" - Return to home screen on user change.")
 
     screen = createParagraphScreen(header, paragraphs, m)
     screen.ScreenName = "Release Notes"
