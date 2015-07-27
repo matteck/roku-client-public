@@ -504,6 +504,17 @@ End Function
 '* source URL, and absolute URLs, so
 '* relative to the server URL
 Function FullUrl(serverUrl, sourceUrl, key) As String
+    ' Replace quotes
+    if instr(1, tostr(key), """") > 0 then
+        rQuote = CreateObject("roRegex", """", "")
+        key = rQuote.ReplaceAll(key, HttpEncode(""""))
+    end if
+
+    if instr(1, tostr(sourceUrl), """") > 0 then
+        rQuote = CreateObject("roRegex", """", "")
+        sourceUrl = rQuote.ReplaceAll(sourceUrl, HttpEncode(""""))
+    end if
+
     finalUrl = ""
     if key <> invalid and (left(key, 4) = "http" OR left(key, 4) = "rtmp") then
         return key
