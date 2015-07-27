@@ -271,7 +271,7 @@ Function ProcessPlaybackPlayMedia() As Boolean
     matchIndex = invalid
     for i = 0 to children.Count() - 1
         item = children[i]
-        if key = item.key then
+        if key = item.key or FullUrl(server.serverUrl, invalid, key) = FullUrl(server.serverUrl, item.sourceUrl, item.key) then
             matchIndex = i
             exit for
         end if
