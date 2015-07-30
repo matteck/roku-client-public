@@ -134,40 +134,9 @@ Sub mpProcessAccountResponse(event)
         m.Protected = false
         m.Admin = false
 
-        m.IsEntitled = false
-        if xml.entitlements <> invalid then
-            if tostr(xml.entitlements@all) = "1" then
-                m.IsEntitled = true
-            else
-                for each entitlement in xml.entitlements.GetChildElements()
-                    if ucase(tostr(entitlement@id)) = "ROKU" then
-                        m.IsEntitled = true
-                        exit for
-                    end if
-                end for
-            end if
-        end if
-
-        if m.IsEntitled then
-            RegWrite("IsEntitled", "1", "misc")
-        else
-            RegWrite("IsEntitled", "0", "misc")
-        end if
-
-        if m.IsPlexPass then
-            RegWrite("IsPlexPass", "1", "misc")
-        else
-            RegWrite("IsPlexPass", "0", "misc")
-        end if
         Debug("Validated myPlex token, corresponds to " + tostr(m.Id) + ":" + tostr(m.Title))
         Debug("PlexPass: " + tostr(m.IsPlexPass))
-        Debug("Entitlement: " + tostr(m.IsEntitled))
         Debug("Restricted: " + tostr(m.IsRestricted))
-
-        mgr = AppManager()
-        mgr.IsPlexPass = m.IsPlexPass
-        mgr.IsEntitled = m.IsEntitled
-        mgr.ResetState()
 
         m.Publish()
 
@@ -271,19 +240,14 @@ Function mpCreateRequest(sourceUrl As String, path As String, appendToken=true A
 End Function
 
 Sub mpDisconnect()
+    Debug("Disconnect Plex Account")
+
     RegDelete("AuthToken", "myplex")
     ' remove all auth tokens for any server
     RegDeleteSection("server_tokens")
     RegDeleteSection("user_cache")
     ' reset the current admin state
     GetGlobalAA().AddReplace("IsAdmin", true)
-
-    Debug("Disconnect Plex Account - Reset Plex Pass and Entitlement status")
-    RegWrite("IsPlexPass", "0", "misc")
-    RegWrite("IsEntitled", "0", "misc")
-    AppManager().IsPlexPass = false
-    AppManager().IsEntitled = false
-    AppManager().ResetState()
 
     ' reset the MyPlexManager singleton
     GetGlobalAA().Delete("MyPlexManager")

@@ -32,8 +32,6 @@ Function createViewController() As Object
     controller.ShowFirstRun = vcShowFirstRun
     controller.ShowReleaseNotes = vcShowReleaseNotes
     controller.ShowHelpScreen = vcShowHelpScreen
-    controller.ShowLimitedWelcome = vcShowLimitedWelcome
-    controller.ShowPlaybackNotAllowed = vcShowPlaybackNotAllowed
 
     controller.InitializeOtherScreen = vcInitializeOtherScreen
     controller.AssignScreenID = vcAssignScreenID
@@ -362,11 +360,6 @@ Function vcCreateContextMenu()
 End Function
 
 Function vcCreatePhotoPlayer(context, contextIndex=invalid, show=true, shuffled=false)
-    if NOT AppManager().IsPlaybackAllowed() then
-        m.ShowPlaybackNotAllowed()
-        return invalid
-    end if
-
     screen = createPhotoPlayerScreen(context, contextIndex, m, shuffled)
     screen.ScreenName = "Photo Player"
 
@@ -380,11 +373,6 @@ Function vcCreatePhotoPlayer(context, contextIndex=invalid, show=true, shuffled=
 End Function
 
 Function vcCreateVideoPlayer(metadata, seekValue=0, directPlayOptions=0, show=true)
-    if NOT AppManager().IsPlaybackAllowed() then
-        m.ShowPlaybackNotAllowed()
-        return invalid
-    end if
-
     ' Create a facade screen for instant feedback.
     facade = CreateObject("roGridScreen")
     facade.show()
@@ -497,51 +485,10 @@ Sub vcShowHelpScreen()
     paragraphs.Push("With Plex you can easily stream your videos, music, photos and home movies to your Roku using your Plex Media Server.")
     paragraphs.Push("To download and install your free Plex Media Server on your computer, visit https://plex.tv/downloads")
 
-    if AppManager().State = "Trial" then
-        paragraphs.Push("Enjoy Plex for Roku free for 30 days, then unlock with a Plex Pass subscription or a small one-time purchase.")
-    end if
-
     screen = createParagraphScreen(header, paragraphs, m)
     m.InitializeOtherScreen(screen, invalid)
 
     screen.Show()
-End Sub
-
-Sub vcShowLimitedWelcome()
-    header = "Your Plex trial has ended"
-    paragraphs = []
-    paragraphs.Push("Your Plex trial period has ended. You can continue to browse content in your library, but playback has been disabled.")
-    addPurchaseButton = false
-    addConnectButton = NOT MyPlexManager().IsSignedIn
-
-    if AppManager().IsAvailableForPurchase then
-        paragraphs.Push("To continue using Plex, you can either buy the channel or connect a Plex Pass enabled account.")
-        addPurchaseButton = true
-    else
-        paragraphs.Push("To continue using Plex, you must connect a Plex Pass enabled account.")
-    end if
-
-    screen = createParagraphScreen(header, paragraphs, m)
-    m.InitializeOtherScreen(screen, invalid)
-
-    if addPurchaseButton then
-        screen.SetButton("purchase", "Purchase channel")
-    end if
-
-    if addConnectButton then
-        screen.SetButton("connect", "Connect Plex account")
-    end if
-
-    screen.HandleButton = channelStatusHandleButton
-
-    screen.SetButton("close", "Close")
-
-    screen.Show()
-End Sub
-
-Sub vcShowPlaybackNotAllowed()
-    ' TODO(schuyler): Are these different?
-    m.ShowLimitedWelcome()
 End Sub
 
 Sub vcInitializeOtherScreen(screen, breadcrumbs)
@@ -758,8 +705,6 @@ Function vcProcessOneMessage(timeout)
             if msgInfo.LogType = "bandwidth.minute" then
                 GetGlobalAA().AddReplace("bandwidth", msgInfo.Bandwidth)
             end if
-        else if type(msg) = "roChannelStoreEvent" then
-            AppManager().HandleChannelStoreEvent(msg)
         else if msg.isRemoteKeyPressed() and msg.GetIndex() = 10 then
             m.CreateContextMenu()
         end if
@@ -809,8 +754,6 @@ Sub vcOnInitialized()
         else if RegRead("last_run_version", "misc", "") <> GetGlobal("appVersionStr") then
             m.ShowReleaseNotes()
             RegWrite("last_run_version", GetGlobal("appVersionStr"), "misc")
-        else if AppManager().State = "Limited" then
-            m.ShowLimitedWelcome()
         else
             m.Home = m.CreateHomeScreen()
         end if
