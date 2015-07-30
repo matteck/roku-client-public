@@ -30,7 +30,6 @@ Function createViewController() As Object
     controller.IsMusicNowPlaying = vcIsMusicNowPlaying
 
     controller.ShowFirstRun = vcShowFirstRun
-    controller.ShowReleaseNotes = vcShowReleaseNotes
     controller.ShowHelpScreen = vcShowHelpScreen
 
     controller.InitializeOtherScreen = vcInitializeOtherScreen
@@ -452,26 +451,6 @@ Sub vcShowFirstRun()
     m.ShowHelpScreen()
 End Sub
 
-Sub vcShowReleaseNotes()
-    header = GetGlobal("appName") + " has been updated to " + GetGlobal("appVersionStr")
-    paragraphs = []
-    paragraphs.Push("Changes in this version include:")
-
-    paragraphs.Push(" - Return to home screen on user change.")
-
-    screen = createParagraphScreen(header, paragraphs, m)
-    screen.ScreenName = "Release Notes"
-    m.InitializeOtherScreen(screen, invalid)
-
-    ' As a one time fix, if the user is just updating and previously specifically
-    ' set the H.264 level preference to 4.0, update it to 4.1.
-    if RegRead("level", "preferences", "41") = "40" then
-        RegWrite("level", "41", "preferences")
-    end if
-
-    screen.Show()
-End Sub
-
 Sub vcShowHelpScreen()
     ' Only show the help screen once per launch.
     if m.helpScreenShown = true then
@@ -750,9 +729,6 @@ Sub vcOnInitialized()
             m.CreatePlayerForItem(m.PlaybackArgs.context, m.PlaybackArgs.index, m.PlaybackArgs.offset)
         else if RegRead("last_run_version", "misc") = invalid then
             m.ShowFirstRun()
-            RegWrite("last_run_version", GetGlobal("appVersionStr"), "misc")
-        else if RegRead("last_run_version", "misc", "") <> GetGlobal("appVersionStr") then
-            m.ShowReleaseNotes()
             RegWrite("last_run_version", GetGlobal("appVersionStr"), "misc")
         else
             m.Home = m.CreateHomeScreen()
