@@ -20,23 +20,11 @@ APPDEPS = manifest count_functions
 ZIP_EXCLUDE = -x .git\* -x manifest.template -x \*.swp -x \*.DS_Store -x \*.py -x roku_screenshot.jpg
 include ../app.mk
 
-APPTITLE = PlexDev
+APPTITLE = "Plex Classic"
 
 num_functions := $(shell grep -ri --include=*.brs 'end \(function\|sub\)' . | wc -l | tr -d ' ')
 
-.PHONY: manifest count_functions beta dev rel test
-
-beta: APPTITLE = PlexBeta
-beta: $(APPNAME)
-
-test: APPTITLE = PlexTest
-test: $(APPNAME)
-
-dev: APPTITLE = PlexDev
-dev: $(APPNAME)
-
-rel: APPTITLE = Plex
-rel: $(APPNAME)
+.PHONY: manifest count_functions
 
 manifest:
 	echo "Creating manifest for $(APPTITLE)"

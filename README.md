@@ -1,4 +1,4 @@
-# Plex/Roku
+# Plex Classic/Roku
 
 The official Plex client for the Roku. This client is maintained by a
 combination of Plex developers and community volunteers. We *love* contributors,
@@ -38,7 +38,7 @@ you're in a unix-like environment:
 
 1. `export ROKU_DEV_TARGET=192.168.1.2` (substituting your IP address...)
 2. `cd Plex`
-3. `make dev install`
+3. `make install`
 
 There are some additional targets in the Makefile, like `make rel install` to
 build a release, but you don't generally need them. One other nicety is the
