@@ -70,10 +70,11 @@ install: $(APPNAME)
 	@echo "Installing $(APPNAME) to host $(ROKU_DEV_TARGET)"
 	@$(CURL) -s -S -F "mysubmit=Install" -F "archive=@$(ZIPREL)/$(APPNAME).zip" -F "passwd=" http://$(ROKU_DEV_TARGET)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//"
 
+pkg: ROKU_PKG_PASSWORD ?= "$(shell read -p "Roku packaging password: " REPLY; echo $$REPLY)"
 pkg: install
 	@echo "*** Creating Package ***"
 
-	@echo "  >> creating destination directory $(PKGREL)"	
+	@echo "  >> creating destination directory $(PKGREL)"
 	@if [ ! -d $(PKGREL) ]; \
 	then \
 		mkdir -p $(PKGREL); \
@@ -86,9 +87,28 @@ pkg: install
 	fi
 
 	@echo "Packaging  $(APPNAME) on host $(ROKU_DEV_TARGET)"
-	@read -p "Password: " REPLY ; echo $$REPLY | xargs -i $(CURL) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd={} -Fpkg_time=`expr \`date +%s\` \* 1000` "http://$(ROKU_DEV_TARGET)/plugin_package" | grep '^<font face=' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs/##' | xargs -i $(CURL) -s -S -o $(PKGREL)/$(APPNAME)_{} http://$(ROKU_DEV_TARGET)/pkgs/{}
 
-	@echo "*** Package  $(APPNAME) complete ***" 
+	$(eval PKGFILE := $(shell $(CURL) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(ROKU_PKG_PASSWORD) -Fpkg_time=`date +%s` "http://$(ROKU_DEV_TARGET)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
+	@echo $(PKGFILE)
+
+	@if [ -z $(PKGFILE) ]; \
+	then \
+		echo "Package createion failed! Have you rekeyed your Roku?"; \
+		exit 1; \
+	fi
+
+	$(eval PKGFULLPATH := $(PKGREL)/$(APPTITLE)_$(PKGFILE))
+	@echo "Downloading package to " $(PKGFULLPATH)
+	http -v --auth-type digest --auth $(ROKU_DEV_USERNAME):$(ROKU_DEV_PASSWORD) -o $(PKGFULLPATH) -d http://$(ROKU_DEV_TARGET)/pkgs/$(PKGFILE)
+
+	@if [ ! -f ""$(PKGFULLPATH)"" ]; \
+	then \
+		echo "Package download failed! File does not exist: " $(PKGFULLPATH); \
+		exit 2; \
+	fi
+
+	@echo "*** Package $(APPTITLE) complete ***"
+
 remove:
 	@echo "Removing $(APPNAME) from host $(ROKU_DEV_TARGET)"
 	@$(CURL) -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(ROKU_DEV_TARGET)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//"
