@@ -505,14 +505,14 @@ End Function
 '* relative to the server URL
 Function FullUrl(serverUrl, sourceUrl, key) As String
     ' Replace quotes
-    if instr(1, tostr(key), """") > 0 then
-        rQuote = CreateObject("roRegex", """", "")
-        key = rQuote.ReplaceAll(key, HttpEncode(""""))
+    if instr(1, tostr(key), chr(34)) > 0 then
+        rQuote = CreateObject("roRegex", chr(34), "")
+        key = rQuote.ReplaceAll(key, HttpEncode(chr(34)))
     end if
 
-    if instr(1, tostr(sourceUrl), """") > 0 then
-        rQuote = CreateObject("roRegex", """", "")
-        sourceUrl = rQuote.ReplaceAll(sourceUrl, HttpEncode(""""))
+    if instr(1, tostr(sourceUrl), chr(34)) > 0 then
+        rQuote = CreateObject("roRegex", chr(34), "")
+        sourceUrl = rQuote.ReplaceAll(sourceUrl, HttpEncode(chr(34)))
     end if
 
     finalUrl = ""
