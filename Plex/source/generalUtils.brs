@@ -438,3 +438,7 @@ Function GetIPAddress() as string
 
     return "127.0.0.1"
 End Function
+
+Function TimeSinceLastKeyPress() as integer
+    return GetGlobal("roDeviceInfo").TimeSinceLastKeyPress()
+End Function

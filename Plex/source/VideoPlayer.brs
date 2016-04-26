@@ -21,6 +21,7 @@ Function createVideoPlayerScreen(metadata, seekValue, directPlayOptions, viewCon
 
     obj.pingTimer = invalid
     obj.lastPosition = 0
+    obj.lastIdleReset = 0
     obj.isPlayed = false
     obj.playbackError = false
     obj.underrunCount = 0
@@ -47,7 +48,7 @@ End Function
 Function VideoPlayer()
     ' If the active screen is a slideshow, return it. Otherwise, invalid.
     screen = GetViewController().screens.Peek()
-    if type(screen.Screen) = "roVideoScreen" then
+    if screen <> invalid and type(screen.screen) = "roVideoScreen" then
         return screen
     else
         return invalid
@@ -332,6 +333,12 @@ Function videoPlayerHandleMessage(msg) As Boolean
             else
                 m.playState = "playing"
                 m.UpdateNowPlaying(true)
+
+                ' Keep the roku non-idle every 30 seconds during playback
+                if TimeSinceLastKeyPress() > 30 and abs(m.lastPosition - m.lastIdleReset) > 30 then
+                    m.lastIdleReset = m.lastPosition
+                    SendEcpCommand("Lit_%E2%8F%B0")
+                end if
             end if
         else if msg.isRequestFailed() then
             Debug("MediaPlayer::playVideo::VideoScreenEvent::isRequestFailed - message = " + tostr(msg.GetMessage()))
@@ -898,4 +905,8 @@ Function GetSafeLanguageName(stream) As String
     end if
 
     return firstOf(m.SafeLanguageNames[stream.languageCode], stream.Language, "Unknown")
+End Function
+
+Function VideoPlaybackActive() as boolean
+    return (GetViewController().IsActiveScreen(VideoPlayer()) and VideoPlayer().playState = "playing")
 End Function

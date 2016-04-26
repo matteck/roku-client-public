@@ -576,8 +576,8 @@ Sub vcPopScreen(screen, callActivate=true as boolean)
     end if
 End Sub
 
-Function vcIsActiveScreen(screen) As Boolean
-    return m.screens.Peek().ScreenID = screen.ScreenID
+Function vcIsActiveScreen(screen=invalid as dynamic) As Boolean
+    return (screen <> invalid and m.screens.Count() > 0 and m.screens.Peek().ScreenID = screen.ScreenID)
 End Function
 
 Function vcGetActiveScreen(wrapper=false)
@@ -636,7 +636,7 @@ End Sub
 Function vcProcessOneMessage(timeout)
     if RegRead("screensaverActivated") <> invalid then
         m.OnScreensaver()
-    else if CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [4, 8]) and GetGlobal("roDeviceInfo").TimeSinceLastKeyPress() > GetGlobal("plexIdleTimeout") then
+    else if CheckMinimumVersion(GetGlobal("rokuVersionArr", [0]), [4, 8]) and TimeSinceLastKeyPress() > GetGlobal("plexIdleTimeout") then
         m.CreateLockScreen()
     end if
 
@@ -979,6 +979,12 @@ Sub vcOnScreensaver()
 End Sub
 
 Sub vcCreateLockScreen(force=false as boolean)
+    ' Do not lock the screen while the video player is active. Roku used to reset
+    ' the idle time during playback, but as a fail safe we'll ignore this until
+    ' playback stops
+    '
+    if VideoPlaybackActive() then return
+
     ' ignore creating lock screen if auto login is enabled
     if (RegRead("autologin", "preferences", "disabled", true) <> "disabled") then return
     ' ignore creating (recreating) lock screen if NOT force and it's already locked/not pin authed
