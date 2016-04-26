@@ -1,0 +1,3 @@
+FIXES:
+- Keep the Roku non-idle during video playback (inhibit lock screen).
+
