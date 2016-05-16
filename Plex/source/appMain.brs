@@ -9,6 +9,13 @@ Sub Main(args)
     forceDebug = false
     initGlobals()
 
+    ' Added by Matt. Turn on amp with HTTP request to wemo
+    wemorequest = CreateObject("roUrlTransfer")
+    wemorequest.SetUrl("http://192.168.0.149:49153/upnp/control/basicevent1")
+    wemorequest.AddHeader("SOAPACTION", chr(34) + "urn:Belkin:service:basicevent:1#SetBinaryState" + chr(34))
+    wemorequest.AddHeader("Content-type", "text/xml charset=" + chr(34) + "utf-8" + chr(34))
+    wemorequest.AsyncPostFromString("<?xml version=" + chr(34) + "1.0" + chr(34) + " encoding=" + chr(34) + "utf-8" + chr(34) + "?><s:Envelope xmlns:s=" + chr(34) + "http://schemas.xmlsoap.org/soap/envelope/" + chr(34) + " s:encodingStyle=" + chr(34) + "http://schemas.xmlsoap.org/soap/encoding/" + chr(34) + "><s:Body><u:SetBinaryState xmlns:u=" + chr(34) + "urn:Belkin:service:basicevent:1" + chr(34) + "><BinaryState>1</BinaryState></u:SetBinaryState></s:Body></s:Envelope>")
+
     ' Process any launch args (set registry values)
     for each arg in args
         value = args[arg]
